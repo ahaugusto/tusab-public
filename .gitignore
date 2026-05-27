@@ -30,6 +30,10 @@ output/
 *.zip
 *.exe
 
+# --- Node / Frontend ---
+web_interface/node_modules/
+web_interface/.vite/
+
 # --- Python ---
 __pycache__/
 *.py[cod]

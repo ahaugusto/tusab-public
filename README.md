@@ -1,4 +1,4 @@
-# 🧠 Brain'IAc — Intelligence Engine
+# 🧠 BrainIAc — Intelligence Engine v2.0 (Web)
 
 > **Motor de extração de conhecimento para YouTube** — transforme qualquer canal público em uma base de dados estruturada, pronta para ser ingerida por ferramentas de IA como NotebookLM e Gemini.
 
@@ -68,10 +68,23 @@ O BrainIAc cria Google Docs programaticamente. Você precisa prover uma chave `c
 
 ### 3. Executando o Sistema
 
+**Interface Web (v2.0 — recomendada):**
+```bash
+python api_brainiac.py
+```
+O servidor abre em `http://127.0.0.1:8000` e lança automaticamente no Edge no modo app.
+Cole a URL do canal, clique em **Confirmar Canal** e depois em **Iniciar Extração**.
+
+**Interface Desktop (v1.0 — legado):**
 ```bash
 python app_brainiac.py
 ```
-Cole a URL (`https://www.youtube.com/@CanalX`) e aperte **Ligar Motor**. A telemetria iniciará.
+Cole a URL (`https://www.youtube.com/@CanalX`) e aperte **Ligar Motor**.
+
+**Recompilar o frontend (se necessário):**
+```bash
+cd web_interface && npm install && npm run build
+```
 
 ---
 

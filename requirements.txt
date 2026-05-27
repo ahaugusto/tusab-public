@@ -1,7 +1,7 @@
-customtkinter
+fastapi
+uvicorn[standard]
 yt-dlp
 pandas
-pillow
 google-auth
 google-auth-oauthlib
 google-api-python-client

@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-slate-100 font-sans antialiased;
+  }
+
+  /* WCAG 2.4.7 — Focus Visible: anel de foco visível em todos os elementos interativos */
+  :focus-visible {
+    outline: 2px solid #8B5CF6;
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* Inputs: o foco é sinalizado pelo wrapper (border + ring), não no próprio input */
+  input:focus-visible {
+    outline: none;
+  }
+}
+
+/* Scrollbar personalizada */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  /* #2D3A52 sobre #080C18 ≈ 3.1:1 — passa WCAG 1.4.11 (componentes UI, mínimo 3:1) */
+  background: #2D3A52;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #8B5CF6;
+}
+
+/* Limita a transição automática para não afetar outline/ring de foco */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Screen-reader only — texto visível apenas para tecnologias assistivas */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
