@@ -1,0 +1,88 @@
+{
+  "name": "brainiac",
+  "version": "2.0.0",
+  "description": "BrainIAc — Motor Universal de Conhecimento",
+  "main": "main.js",
+  "author": {
+    "name":  "CriAugu",
+    "email": "augusto.brasil@saude.gov.br",
+    "url":   "https://linkedin.com/in/augustoalvesbrasil"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev":        "electron .",
+    "build":      "electron-builder --win",
+    "build:dir":  "electron-builder --win --dir",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.0"
+  },
+  "devDependencies": {
+    "electron":         "^34.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId":       "com.criaugu.brainiac",
+    "productName": "BrainIAc",
+    "copyright":   "© 2026 CriAugu — CNPJ 65.131.075/0001-57",
+
+    "directories": {
+      "output": "../dist_electron",
+      "buildResources": "build_resources"
+    },
+
+    "files": [
+      "main.js",
+      "preload.js",
+      "loading.html"
+    ],
+
+    "extraResources": [
+      {
+        "from": "../",
+        "to":   "app",
+        "filter": [
+          "api_brainiac.py",
+          "motor_brainiac.py",
+          "agent_brainiac.py",
+          "credentials.json",
+          "web_interface/dist/**",
+          "assets/**"
+        ]
+      },
+      {
+        "from": "python_env",
+        "to":   "python_env"
+      },
+      {
+        "from": "bin",
+        "to":   "bin"
+      }
+    ],
+
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon":   "../assets/logo.ico"
+    },
+
+    "nsis": {
+      "oneClick":                      false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon":                 "../assets/logo.ico",
+      "uninstallerIcon":               "../assets/logo.ico",
+      "createDesktopShortcut":         true,
+      "createStartMenuShortcut":       true,
+      "shortcutName":                  "BrainIAc",
+      "license":                       "build_resources/license.txt",
+      "installerSidebar":              "build_resources/installer_sidebar.bmp"
+    },
+
+    "publish": {
+      "provider": "github",
+      "owner":    "criaugu",
+      "repo":     "brainiac"
+    }
+  }
+}

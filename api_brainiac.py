@@ -1,14 +1,21 @@
+# Copyright (c) 2026 CriAugu — CNPJ 65.131.075/0001-57
+# Autor: Augusto Brasil — https://linkedin.com/in/augustoalvesbrasil
+# Todos os direitos reservados. Proibida a reprodução sem autorização expressa.
+# Protegido pela Lei nº 9.609/1998 (Lei do Software) e Lei nº 9.610/1998.
+
 import threading
 import sys
 import time
 import os
 import re
+import json
 import motor_brainiac
+import agent_brainiac
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 
 import logging
 logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
@@ -65,6 +72,15 @@ class AppState:
         self.drive_auth_running  = False
         self.drive_auth_error    = None
         self.drive_cancel_event  = threading.Event()
+
+        # Agente RAG
+        self.agent_indexing      = False
+        self.agent_index_logs    = []
+        self.agent_index_stop    = threading.Event()
+        self.agent_chat_lock     = threading.Lock()
+
+        # Filtro de fontes de extração
+        self.fontes_filtro: list = []
 
 state = AppState()
 
@@ -130,7 +146,8 @@ def run_motor():
         motor_brainiac.brainiac_engine(
             canal_url=state.canal_url,
             evento_pausa=state.evento_pausa,
-            evento_cancelar=state.evento_cancelar
+            evento_cancelar=state.evento_cancelar,
+            fontes_filtro=state.fontes_filtro or None
         )
 
         if state.evento_cancelar.is_set():
@@ -230,8 +247,11 @@ def set_channel(req: ChannelRequest):
     return {"message": "Canal configurado", "canal_nome": state.stats["canal_nome"]}
 
 
+class StartRequest(BaseModel):
+    fontes: list = []
+
 @app.post("/start")
-def start_engine(background_tasks: BackgroundTasks):
+def start_engine(background_tasks: BackgroundTasks, req: StartRequest = None):
     if not state.canal_url:
         return {"message": "Configure a URL do canal antes de iniciar", "error": True}
     if not state.is_running:
@@ -244,6 +264,7 @@ def start_engine(background_tasks: BackgroundTasks):
         state.stats["progress"]               = 0
         state.stats["status"]                 = "Iniciando"
         state.stats["idioma_detectado"]       = ""
+        state.fontes_filtro                   = (req.fontes if req else [])
         state.evento_cancelar.clear()
         state.evento_pausa.set()
         state.is_paused = False
@@ -278,6 +299,299 @@ def cancel_engine():
     return {"message": "Motor não está rodando"}
 
 
+@app.get("/open-folder")
+def open_folder(name: str):
+    import subprocess
+    folders = {
+        "data":        motor_brainiac.DATA_DIR,
+        "cerebro_txt": motor_brainiac.LOCAL_TXT_DIR,
+        "gestao":      motor_brainiac.GESTAO_DIR,
+        "agent_index": agent_brainiac.INDEX_DIR,
+    }
+    target = folders.get(name)
+    if not target:
+        return {"error": True, "message": "Pasta desconhecida"}
+    os.makedirs(target, exist_ok=True)
+    subprocess.Popen(["explorer", target])
+    return {"ok": True}
+
+
+# ==========================================
+# --- AGENTE RAG ---
+# ==========================================
+
+class AgentConfigRequest(BaseModel):
+    provider: str
+    api_key:  str
+    embed_api_key: str = ""
+
+class AgentChatRequest(BaseModel):
+    mensagem:      str
+    canal_nome:    str
+    historico:     list = []
+    canais_extras: list = []
+
+def _run_indexacao(canal_nome: str, canal_prefixo: str):
+    try:
+        state.agent_indexing   = True
+        state.agent_index_logs = []
+        state.agent_index_stop.clear()
+
+        def cb(msg):
+            state.agent_index_logs.append({"timestamp": time.strftime("%H:%M:%S"), "message": msg})
+
+        agent_brainiac.indexar(
+            canal_nome=canal_nome,
+            canal_prefixo=canal_prefixo,
+            callback=cb,
+            stop_event=state.agent_index_stop,
+        )
+    except Exception as e:
+        state.agent_index_logs.append({"timestamp": time.strftime("%H:%M:%S"), "message": f"❌ Erro na indexação: {e}"})
+    finally:
+        state.agent_indexing = False
+
+
+@app.get("/agent/status")
+def agent_status():
+    status = agent_brainiac.get_agent_status()
+    status["indexing"]    = state.agent_indexing
+    status["index_logs"]  = state.agent_index_logs[-30:]
+    return status
+
+
+@app.get("/agent/ollama/status")
+def ollama_status():
+    """Verifica se Ollama está rodando e quais modelos estão instalados."""
+    import requests as _req
+    try:
+        r = _req.get('http://localhost:11434/api/tags', timeout=3)
+        models = [m['name'] for m in r.json().get('models', [])]
+        return {'running': True, 'models': models}
+    except Exception:
+        return {'running': False, 'models': []}
+
+
+@app.post("/agent/ollama/pull")
+async def ollama_pull(background_tasks: BackgroundTasks):
+    """Inicia o download do modelo padrão llama3.2:1b em background."""
+    if not hasattr(state, 'ollama_pull_progress'):
+        state.ollama_pull_progress = {'status': 'idle', 'pct': 0, 'message': ''}
+
+    def _pull():
+        import requests as _req
+        state.ollama_pull_progress = {'status': 'pulling', 'pct': 0, 'message': 'Iniciando download...'}
+        try:
+            with _req.post(
+                'http://localhost:11434/api/pull',
+                json={'name': 'llama3.2:1b', 'stream': True},
+                stream=True, timeout=600
+            ) as resp:
+                for line in resp.iter_lines():
+                    if not line:
+                        continue
+                    import json as _json
+                    data = _json.loads(line)
+                    status = data.get('status', '')
+                    completed = data.get('completed', 0)
+                    total = data.get('total', 0)
+                    pct = int(completed / total * 100) if total > 0 else 0
+                    state.ollama_pull_progress = {
+                        'status': 'pulling', 'pct': pct,
+                        'message': status[:80] if status else ''
+                    }
+            state.ollama_pull_progress = {'status': 'done', 'pct': 100, 'message': 'Modelo pronto!'}
+        except Exception as e:
+            state.ollama_pull_progress = {'status': 'error', 'pct': 0, 'message': str(e)[:120]}
+
+    background_tasks.add_task(_pull)
+    return {'message': 'Download iniciado.'}
+
+
+@app.get("/agent/ollama/pull-progress")
+def ollama_pull_progress():
+    """Retorna o progresso do download do modelo."""
+    if not hasattr(state, 'ollama_pull_progress'):
+        return {'status': 'idle', 'pct': 0, 'message': ''}
+    return state.ollama_pull_progress
+
+
+@app.get("/agent/canal-meta")
+def agent_canal_meta():
+    config = agent_brainiac.carregar_config()
+    canal_nome = state.stats.get("canal_nome", "") or config.get("canal_indexado", "")
+    if not canal_nome:
+        return {}
+    canal_prefixo = re.sub(r'[<>:"/\\|?*\s]', '_', canal_nome).strip('_')
+    return agent_brainiac._carregar_meta_canal(canal_prefixo)
+
+
+@app.get("/agent/config")
+def get_agent_config():
+    config = agent_brainiac.carregar_config()
+    return {
+        "provider": config.get("provider", "gemini"),
+        "api_key":  config.get("api_key", ""),
+    }
+
+
+@app.post("/agent/config")
+def agent_config(req: AgentConfigRequest):
+    if state.agent_indexing:
+        return {"error": True, "message": "Indexação em andamento. Aguarde."}
+    config = agent_brainiac.carregar_config()
+    config["provider"] = req.provider
+    if req.api_key:
+        config["api_key"] = req.api_key
+    elif req.provider == "ollama":
+        config["api_key"] = ""
+    if req.embed_api_key:
+        config["embed_api_key"] = req.embed_api_key
+    agent_brainiac.salvar_config(config)
+    return {"message": "Configuração salva com sucesso."}
+
+
+class AgentIndexRequest(BaseModel):
+    canal_nome: str = ""
+
+@app.post("/agent/index")
+def agent_index(background_tasks: BackgroundTasks, req: AgentIndexRequest = None):
+    if state.agent_indexing:
+        return {"error": True, "message": "Indexação já está em andamento."}
+    if state.is_running:
+        return {"error": True, "message": "Aguarde a extração terminar antes de indexar."}
+
+    # Aceita canal do estado global ou do corpo da requisição (fallback pós-restart)
+    canal_nome = state.stats.get("canal_nome", "") or (req.canal_nome if req else "")
+    canal_prefixo = re.sub(r'[<>:"/\\|?*\s]', '_', canal_nome).strip('_') if canal_nome else ""
+
+    if not canal_nome:
+        return {"error": True, "message": "Nenhum canal configurado."}
+
+    config = agent_brainiac.carregar_config()
+    if not config.get("provider") or not config.get("api_key"):
+        return {"error": True, "message": "Configure a chave de API antes de indexar."}
+
+    background_tasks.add_task(_run_indexacao, canal_nome, canal_prefixo)
+    return {"message": f"Indexação iniciada para @{canal_nome}."}
+
+
+@app.post("/agent/test-key")
+def agent_test_key():
+    config = agent_brainiac.carregar_config()
+    provider = config.get("provider", "")
+    if not provider or (not config.get("api_key") and provider != "ollama"):
+        return {"error": True, "message": "Nenhuma chave configurada."}
+    try:
+        provider = config["provider"]
+        api_key  = config["api_key"]
+        if provider == "ollama":
+            import requests as _req
+            r = _req.get('http://localhost:11434/api/tags', timeout=3)
+            models = [m['name'] for m in r.json().get('models', [])]
+            if not models:
+                return {"error": True, "message": "Ollama rodando mas nenhum modelo instalado. Instale um modelo primeiro."}
+            return {"ok": True, "message": f"Ollama ativo! Modelos: {', '.join(models[:3])}"}
+        if provider == "openai":
+            from openai import OpenAI
+            OpenAI(api_key=api_key).chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": "ok"}],
+                max_tokens=1,
+            )
+        elif provider == "anthropic":
+            import anthropic
+            anthropic.Anthropic(api_key=api_key).messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=1,
+                messages=[{"role": "user", "content": "ok"}],
+            )
+        elif provider in ("gemini", "google"):
+            import google.generativeai as _genai
+            _genai.configure(api_key=api_key)
+            modelos_disponiveis = [
+                m.name.replace("models/", "")
+                for m in _genai.list_models()
+                if "generateContent" in m.supported_generation_methods
+            ]
+            CANDIDATOS = [
+                "gemini-1.5-flash", "gemini-1.5-flash-latest",
+                "gemini-1.5-flash-002", "gemini-1.5-pro",
+                "gemini-pro", "gemini-2.0-flash-lite",
+            ]
+            modelo_escolhido = next(
+                (m for m in CANDIDATOS if m in modelos_disponiveis), None
+            )
+            if not modelo_escolhido:
+                return {
+                    "error": True,
+                    "message": f"Nenhum modelo compatível encontrado. Disponíveis: {', '.join(modelos_disponiveis[:5])}"
+                }
+            _genai.GenerativeModel(modelo_escolhido).generate_content("ok")
+            return {"ok": True, "message": f"Chave válida! Modelo: {modelo_escolhido}"}
+        return {"ok": True, "message": "Chave válida! Conexão estabelecida com sucesso."}
+    except Exception as e:
+        return {"error": True, "message": f"Chave inválida: {e}"}
+
+
+@app.post("/agent/index-cancel")
+def agent_index_cancel():
+    state.agent_index_stop.set()
+    return {"message": "Indexação cancelada."}
+
+
+@app.post("/agent/chat")
+def agent_chat(req: AgentChatRequest):
+    if state.agent_indexing:
+        return {"error": True, "message": "Indexação em andamento. Aguarde."}
+    try:
+        with state.agent_chat_lock:
+            resultado = agent_brainiac.chat(req.mensagem, req.canal_nome, req.historico, req.canais_extras)
+        return resultado
+    except Exception as e:
+        return {"error": True, "message": str(e)}
+
+
+class AgentChatStreamRequest(BaseModel):
+    mensagem:      str
+    canal_nome:    str
+    historico:     list = []
+    canais_extras: list = []
+
+@app.post("/agent/chat/stream")
+def agent_chat_stream(req: AgentChatStreamRequest):
+    if state.agent_indexing:
+        def _err():
+            yield json.dumps({'error': 'Indexação em andamento. Aguarde.'})
+        return StreamingResponse(_err(), media_type='text/plain')
+
+    def _gen():
+        try:
+            for chunk in agent_brainiac.chat_stream(req.mensagem, req.canal_nome, req.historico, req.canais_extras):
+                yield chunk + '\n'
+        except Exception as e:
+            yield json.dumps({'error': str(e)}) + '\n'
+
+    return StreamingResponse(_gen(), media_type='text/plain')
+
+
+@app.delete("/agent/canal/{canal_nome}")
+def agent_canal_delete(canal_nome: str):
+    import re as _re
+    canal_prefixo = _re.sub(r'[<>:"/\\|?*\s]', '_', canal_nome).strip('_')
+    idx_path = agent_brainiac._index_path(canal_prefixo)
+    agent_brainiac._invalidar_cache(canal_prefixo)
+    if os.path.exists(idx_path):
+        os.remove(idx_path)
+        # Remove from config if it was the active canal
+        config = agent_brainiac.carregar_config()
+        if config.get('canal_indexado') == canal_nome:
+            config['canal_indexado'] = ''
+            agent_brainiac.salvar_config(config)
+        return {"ok": True}
+    return {"error": True, "message": "Índice não encontrado"}
+
+
 # ==========================================
 # --- SERVIR FRONTEND ESTÁTICO ---
 # ==========================================
@@ -297,18 +611,26 @@ if __name__ == "__main__":
     import subprocess
     from threading import Timer
 
-    def open_app_window():
-        url = "http://127.0.0.1:8001"
-        try:
-            edge_path = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
-            if os.path.exists(edge_path):
-                subprocess.Popen([edge_path, f"--app={url}"])
-            else:
+    # Quando rodando dentro do Electron a janela é gerenciada pelo main.js
+    if not os.environ.get("ELECTRON_RUN"):
+        def open_app_window():
+            url = "http://127.0.0.1:8001"
+            app_flags = [f"--app={url}", "--start-maximized"]
+            launched = False
+            for browser_path in [
+                "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+                "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+                "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+            ]:
+                if os.path.exists(browser_path):
+                    subprocess.Popen([browser_path] + app_flags)
+                    launched = True
+                    break
+            if not launched:
                 import webbrowser
                 webbrowser.open(url)
-        except Exception:
-            import webbrowser
-            webbrowser.open(url)
 
-    Timer(2.0, open_app_window).start()
+        Timer(2.0, open_app_window).start()
+
     uvicorn.run(app, host="127.0.0.1", port=8001, log_level="warning")

@@ -1,9 +1,15 @@
+# Copyright (c) 2026 CriAugu — CNPJ 65.131.075/0001-57
+# Autor: Augusto Brasil — https://linkedin.com/in/augustoalvesbrasil
+# Todos os direitos reservados. Proibida a reprodução sem autorização expressa.
+# Protegido pela Lei nº 9.609/1998 (Lei do Software) e Lei nº 9.610/1998.
+
 import os
 import sys
 import time
 import subprocess
 import re
 import io
+import json
 import threading
 import pandas as pd
 from datetime import datetime
@@ -18,30 +24,37 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseUpload
 # --- CONFIGURAÇÕES E CAMINHOS ---
 # ==========================================
 
-SCOPES = ['https://www.googleapis.com/auth/drive']
+SCOPES = ['https://www.googleapis.com/auth/drive.file']
 MAX_WORDS_PER_FILE = 40000
 
 
 def obter_caminho_dados():
-    """Pasta externa ao .exe (onde ficam dados persistentes)."""
+    """Pasta raiz dos dados persistentes.
+    Prioridade: var de ambiente BRAINIAC_DATA_DIR (injetada pelo Electron)
+    → executável PyInstaller → diretório do script.
+    """
+    if os.environ.get('BRAINIAC_DATA_DIR'):
+        return os.environ['BRAINIAC_DATA_DIR']
     if getattr(sys, 'frozen', False):
         return os.path.dirname(sys.executable)
     return os.path.dirname(os.path.abspath(__file__))
 
 
 def obter_caminho_assets():
-    """Pasta interna ao build (onde ficam credentials.json e logo)."""
+    """Pasta interna ao build (onde ficam credentials.json e logos)."""
     if getattr(sys, 'frozen', False):
         return getattr(sys, '_MEIPASS', os.path.dirname(sys.executable))
     return os.path.dirname(os.path.abspath(__file__))
 
 
-DADOS_DIR = obter_caminho_dados()
+DADOS_DIR  = obter_caminho_dados()
 ASSETS_DIR = obter_caminho_assets()
+DATA_DIR   = os.path.join(DADOS_DIR, 'data')
 
-LOCAL_TXT_DIR = os.path.join(DADOS_DIR, 'cerebro_txt')
-GESTAO_DIR = os.path.join(DADOS_DIR, 'gestao_local')
-TOKEN_PATH = os.path.join(DADOS_DIR, 'token.json')
+LOCAL_TXT_DIR    = os.path.join(DATA_DIR, 'cerebro_txt')
+GESTAO_DIR       = os.path.join(DATA_DIR, 'gestao')
+TEMP_DIR         = os.path.join(DATA_DIR, 'temp')
+TOKEN_PATH       = os.path.join(DATA_DIR, 'config', 'token.json')
 CREDENTIALS_PATH = os.path.join(ASSETS_DIR, 'credentials.json')
 
 
@@ -60,7 +73,8 @@ def extrair_nome_canal(url):
     if match:
         return match.group(1)
     parts = url.rstrip('/').split('/')
-    return parts[-1].lstrip('@') if parts else "Canal"
+    name = parts[-1].lstrip('@') if parts else "Canal"
+    return name.split('?')[0]
 
 
 def formatar_data(data_str):
@@ -101,33 +115,11 @@ def executar_comando(cmd):
     return result.stdout.decode('utf-8', errors='replace')
 
 
-def detectar_idiomas_canal(all_videos):
-    """Amostra até 2 vídeos do canal para detectar idiomas de legenda disponíveis."""
-    candidatos = [
-        v for v in all_videos
-        if v.get('title') not in ['[Private video]', '[Deleted video]']
-    ][:2]
-
-    if not candidatos:
-        return 'pt,pt-BR,pt-PT,en'
-
-    contagem = {}
-    for video in candidatos:
-        v_link = f"https://www.youtube.com/watch?v={video['id']}"
-        saida = executar_comando(['yt-dlp', '--list-subs', '--skip-download', v_link])
-        for linha in saida.split('\n'):
-            m = re.match(r'^([a-zA-Z]{2,3}(?:-[a-zA-Z]{2,4})?)\s{2,}', linha.strip())
-            if m:
-                lang = m.group(1).lower()
-                contagem[lang] = contagem.get(lang, 0) + 1
-
-    if not contagem:
-        return 'pt,pt-BR,pt-PT,en'
-
-    ordenados = sorted(contagem, key=lambda x: contagem[x], reverse=True)
-    if 'en' not in ordenados:
-        ordenados.append('en')
-    return ','.join(ordenados[:8])
+def detectar_idiomas_canal(_all_videos):
+    """Retorna idioma fixo para evitar 429.
+    Tentativas duplas (pt + en) causam rate limit no YouTube — mantemos só pt,
+    que cobre canais BR e captura auto-legendas em pt-BR/pt por preferência."""
+    return 'pt'
 
 
 def gerar_fontes(canal_url):
@@ -401,7 +393,58 @@ BrainIAc — {canal_nome_raw}/
 # --- ENGINE PRINCIPAL ---
 # ==========================================
 
-def brainiac_engine(canal_url, evento_pausa=None, evento_cancelar=None):
+def coletar_meta_canal(canal_url: str, canal_nome_raw: str, prefixo: str) -> dict:
+    """Coleta metadados do canal via yt-dlp e salva JSON local."""
+    meta = {
+        'canal_nome':    canal_nome_raw,
+        'canal_handle':  f'@{canal_nome_raw}',
+        'canal_url':     canal_url,
+        'inscritos':     '',
+        'extraido_em':   datetime.now().strftime('%d/%m/%Y'),
+    }
+    try:
+        creationflags = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
+        result = subprocess.run(
+            ['yt-dlp', '--flat-playlist', '--playlist-items', '1',
+             '--print', '%(channel)s|||%(uploader_id)s|||%(channel_follower_count)s',
+             '--js-runtimes', 'node', canal_url],
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+            text=True, creationflags=creationflags, timeout=30
+        )
+        for linha in result.stdout.strip().splitlines():
+            partes = linha.split('|||')
+            if len(partes) >= 3:
+                if partes[0].strip():
+                    meta['canal_nome']   = partes[0].strip()
+                if partes[1].strip() and partes[1].strip() != 'NA':
+                    meta['canal_handle'] = partes[1].strip()
+                    if not meta['canal_handle'].startswith('@'):
+                        meta['canal_handle'] = '@' + meta['canal_handle']
+                if partes[2].strip() and partes[2].strip() not in ('NA', 'None', ''):
+                    try:
+                        n = int(partes[2].strip())
+                        if n >= 1_000_000:
+                            meta['inscritos'] = f'{n/1_000_000:.1f}M'
+                        elif n >= 1_000:
+                            meta['inscritos'] = f'{n//1_000}K'
+                        else:
+                            meta['inscritos'] = str(n)
+                    except ValueError:
+                        pass
+                break
+    except Exception:
+        pass
+
+    meta_path = os.path.join(LOCAL_TXT_DIR, f'{prefixo}_meta.json')
+    with open(meta_path, 'w', encoding='utf-8') as f:
+        json.dump(meta, f, ensure_ascii=False, indent=2)
+
+    print(f"      📋 Canal: {meta['canal_nome']} {meta['canal_handle']}"
+          + (f" · {meta['inscritos']} inscritos" if meta['inscritos'] else ""))
+    return meta
+
+
+def brainiac_engine(canal_url, evento_pausa=None, evento_cancelar=None, fontes_filtro=None):
     canal_nome_raw = extrair_nome_canal(canal_url)
     canal_nome_safe = sanitizar_nome(canal_nome_raw)
     prefixo = canal_nome_safe
@@ -414,11 +457,18 @@ def brainiac_engine(canal_url, evento_pausa=None, evento_cancelar=None):
     print(f"   Prefixo: {prefixo}")
     print("=" * 70 + "\n")
 
-    for d in [LOCAL_TXT_DIR, GESTAO_DIR]:
-        if not os.path.exists(d):
-            os.makedirs(d)
+    for d in [LOCAL_TXT_DIR, GESTAO_DIR, TEMP_DIR,
+              os.path.join(DATA_DIR, 'config')]:
+        os.makedirs(d, exist_ok=True)
+
+    # --- 0. METADADOS DO CANAL ---
+    print("📋 Coletando metadados do canal...")
+    meta_canal = coletar_meta_canal(canal_url, canal_nome_raw, prefixo)
 
     FONTES = gerar_fontes(canal_url)
+    if fontes_filtro:
+        FONTES = [f for f in FONTES if f['aba'] in fontes_filtro]
+        print(f"🎯 Fontes selecionadas: {[f['aba'] for f in FONTES]}\n")
 
     # --- 1. MAPEAMENTO ---
     all_videos = []
@@ -469,8 +519,7 @@ def brainiac_engine(canal_url, evento_pausa=None, evento_cancelar=None):
     total_liquido = len(df_full)
     print(f"✅ {total_liquido} vídeos mapeados no canal.\n")
 
-    # --- 1b. DETECÇÃO DE IDIOMA ---
-    print("🔍 Detectando idiomas de legenda disponíveis no canal...")
+    # --- 1b. IDIOMAS ---
     sub_langs = detectar_idiomas_canal(all_videos)
     print(f"      📋 Idiomas configurados: {sub_langs}\n")
 
@@ -604,30 +653,61 @@ def brainiac_engine(canal_url, evento_pausa=None, evento_cancelar=None):
 
         print(f"[{idx + 1}/{total_liquido}] 🎬 Extraindo: {v_title[:55]}...")
         try:
-            temp_out = f"temp_{v_id}"
+            temp_base = f"temp_{v_id}"
+            temp_out = os.path.join(TEMP_DIR, temp_base)
             creationflags = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
 
-            # Captura stdout para extrair a data exata de publicação do vídeo.
-            # --print %(upload_date)s resolve casos em que --flat-playlist retorna NA.
-            # sub_langs é detectado dinamicamente no início da engine.
-            result = subprocess.run(
-                ['yt-dlp', '--skip-download', '--write-auto-sub', '--write-sub',
-                 '--sub-lang', sub_langs, '--output', temp_out,
-                 '--print', '%(upload_date)s',
-                 v_link],
+            # Baixa legendas com caminho absoluto para evitar dependência do cwd.
+            # --print não pode ser combinado com --write-auto-subs no yt-dlp 2026+
+            # (ativa simulação que suprime escrita de arquivos).
+            res_sub = subprocess.run(
+                ['yt-dlp', '--skip-download', '--write-auto-subs', '--write-subs',
+                 '--sub-langs', sub_langs, '--output', temp_out,
+                 '--js-runtimes', 'node', v_link],
+                stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
+                text=True, creationflags=creationflags
+            )
+            if res_sub.returncode != 0 and res_sub.stderr:
+                erros = [l for l in res_sub.stderr.splitlines()
+                         if 'ERROR' in l or 'WARNING' in l]
+                if erros:
+                    print(f"      ⚠️ yt-dlp: {erros[-1][:120]}")
+
+            # Busca data + tags numa única chamada para evitar request extra.
+            data_real = video['date']
+            tags_str  = ''
+            result_meta = subprocess.run(
+                ['yt-dlp', '--skip-download',
+                 '--print', '%(upload_date)s|||%(tags)j|||%(description)s',
+                 '--js-runtimes', 'node', v_link],
                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                 text=True, creationflags=creationflags
             )
+            descricao_str = ''
+            for linha in result_meta.stdout.strip().splitlines():
+                partes = linha.split('|||')
+                data_part = partes[0].strip()
+                if re.match(r'^\d{8}$', data_part):
+                    data_real = formatar_data(data_part)
+                if len(partes) > 1:
+                    try:
+                        tags_list = json.loads(partes[1].strip())
+                        if isinstance(tags_list, list):
+                            tags_str = ','.join(str(t).strip() for t in tags_list if t)
+                    except Exception:
+                        pass
+                if len(partes) > 2:
+                    desc = partes[2].strip()
+                    if desc and desc not in ('NA', 'None', ''):
+                        # Limita a 500 chars para não inflar o arquivo
+                        descricao_str = desc[:500].replace('\n', ' ').strip()
+                break
 
-            # Usa a data exata do vídeo individual; cai de volta para o mapeamento se falhar.
-            data_real = video['date']
-            for linha in result.stdout.strip().splitlines():
-                linha = linha.strip()
-                if re.match(r'^\d{8}$', linha):
-                    data_real = formatar_data(linha)
-                    break
-
-            vtt_files = [f for f in os.listdir('.') if f.startswith(temp_out) and f.endswith('.vtt')]
+            vtt_files = [
+                os.path.join(TEMP_DIR, f)
+                for f in os.listdir(TEMP_DIR)
+                if f.startswith(temp_base) and f.endswith('.vtt')
+            ]
             if vtt_files:
                 texto = limpar_vtt(vtt_files[0])
                 if len(texto) > 150:
@@ -648,13 +728,28 @@ def brainiac_engine(canal_url, evento_pausa=None, evento_cancelar=None):
                         caminho_txt = os.path.join(LOCAL_TXT_DIR, f"{nome_arquivo_base}.txt")
                         print(f"      📂 NOVO ARQUIVO: Parte {parte_atual} iniciada.")
 
+                    file_is_new = not os.path.exists(caminho_txt)
                     with open(caminho_txt, "a", encoding="utf-8-sig") as f:
+                        if file_is_new:
+                            handle = meta_canal.get('canal_handle', f'@{canal_nome_raw}')
+                            inscritos = meta_canal.get('inscritos', '')
+                            f.write(
+                                f"# BrainIAc Engine — Base de Conhecimento\n"
+                                f"# Canal: {meta_canal.get('canal_nome', canal_nome_raw)} ({handle})\n"
+                                f"# URL: {canal_url}\n"
+                                + (f"# Inscritos: {inscritos}\n" if inscritos else "")
+                                + f"# Extraído em: {meta_canal.get('extraido_em', '')}\n"
+                                f"# Todos os direitos do conteúdo pertencem ao criador original.\n"
+                                f"{'=' * 70}\n\n"
+                            )
                         f.write(
                             f"\n{'=' * 70}\n"
                             f"TITULO: {v_title}\n"
                             f"ABA: {video['aba']}\n"
                             f"DATA: {data_real}\n"
                             f"LINK: {v_link}\n"
+                            f"TAGS: {tags_str}\n"
+                            f"DESCRICAO: {descricao_str}\n"
                             f"{'-' * 70}\n"
                             f"CONTEUDO:\n{texto}\n"
                             f"{'=' * 70}\n"
@@ -684,8 +779,11 @@ def brainiac_engine(canal_url, evento_pausa=None, evento_cancelar=None):
                     ids_ja_minerados.add(v_id)
                     print(f"      ⚠️ Ignorado: Legenda muito curta.")
 
-                for f in vtt_files:
-                    os.remove(f)
+                for vf in vtt_files:
+                    try:
+                        os.remove(vf)
+                    except Exception:
+                        pass
             else:
                 nova_linha = {
                     'ID': v_id, 'Data_Pub': data_real, 'Link': v_link,

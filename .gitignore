@@ -4,19 +4,23 @@
 
 # --- Credenciais e tokens OAuth (NUNCA subir) ---
 credentials.json
-token.json
+data/config/token.json
+data/config/agent_config.json
 *.json.bak
 .env
 .env.*
 
-# --- Config local gerado em runtime ---
-brainiac_config.json
+# --- Dados gerados em runtime ---
+data/cerebro_txt/
+data/gestao/
+data/agent_index/
+data/temp/
 
-# --- Dados gerados em runtime (textos extraídos e metadados) ---
-brainiac_txt/
-brainiac_mgmt/
+# --- Legado (caminhos antigos) ---
 cerebro_txt/
 gestao_local/
+brainiac_txt/
+brainiac_mgmt/
 
 # --- Backup local (não vai pro git, mas mantém no disco) ---
 _backup_local/
@@ -33,6 +37,14 @@ output/
 # --- Node / Frontend ---
 web_interface/node_modules/
 web_interface/.vite/
+
+# --- Electron ---
+electron/node_modules/
+electron/python_env/
+electron/bin/
+electron/build_resources/*.bmp
+electron/build_resources/*.ico
+dist_electron/
 
 # --- Python ---
 __pycache__/

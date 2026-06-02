@@ -1,0 +1,75 @@
+BRAINIAC ENGINE — PRÓXIMOS PASSOS
+© 2026 CriAugu — Atualizado: Junho 2026
+
+─────────────────────────────────────────
+ONDE ESTAMOS
+─────────────────────────────────────────
+
+O BrainIAc Engine está funcional como produto completo:
+
+• Extração de legendas de qualquer canal do YouTube (vídeos, shorts, lives,
+  podcasts, cursos, playlists) com delta inteligente
+• Agente RAG local com BM25 + Ollama — sem API key, sem custo, offline
+• Interface web responsiva em PT/EN/ES com streaming de respostas
+• Sync opcional com Google Drive (OAuth2, escopo drive.file)
+• Distribuição via Electron com instalador Windows (NSIS)
+• Auto-update via GitHub Releases
+• Copyright registrado, termos de uso e licença no instalador
+
+─────────────────────────────────────────
+PRÓXIMO SPRINT — PREPARAR PARA DISTRIBUIÇÃO
+─────────────────────────────────────────
+
+1. Registro no INPI
+   → Acessar inpi.gov.br > Programa de Computador
+   → Titularidade: CriAugu CNPJ 65.131.075/0001-57
+   → Anexar primeiras/últimas 50 linhas de cada arquivo principal
+   → Custo: ~R$90 (ME)
+
+2. Repositório de distribuição no GitHub
+   → Criar repositório criaugu/brainiac
+   → Configurar GitHub Releases para auto-update
+   → Definir GH_TOKEN para publicação do instalador
+
+3. Publicar OAuth app no Google Cloud Console
+   → Mudar status de Testing para Production
+   → Preencher privacy policy e terms of service (Google Sites prontos)
+   → Submeter para revisão (escopo drive.file = processo simplificado)
+
+4. Gerar primeiro instalador oficial
+   → Rodar scripts/setup-env.ps1 (Python + pip + yt-dlp + node)
+   → npm run build no web_interface
+   → npm run build no electron
+   → Publicar .exe no GitHub Releases
+
+─────────────────────────────────────────
+EVOLUÇÃO DO PRODUTO
+─────────────────────────────────────────
+
+Fase 1 — atual
+  Pipeline local → Drive → NotebookLM (manual)
+  Agente RAG próprio com Ollama (sem dependência externa)
+
+Fase 2 — curto prazo
+  Sistema de licença simples (chave de ativação, validação online)
+  Histórico de extrações e dashboard de canais indexados
+  Notificação do Windows ao concluir extração
+
+Fase 3 — médio prazo
+  Automação da importação no NotebookLM via API (quando disponível)
+  Servidor MCP — base RAG acessível por qualquer agente Claude/GPT
+  Modelos Ollama alternativos configuráveis pelo usuário
+
+Fase 4 — longo prazo
+  Modo institucional: BrainIAc em servidor interno, múltiplos usuários
+  API pública para integração com outras ferramentas
+  Suporte a fontes além do YouTube (podcasts RSS, PDFs locais)
+
+─────────────────────────────────────────
+PRINCÍPIO QUE NÃO MUDA
+─────────────────────────────────────────
+
+A extração via yt-dlp tem que continuar local. É o coração da proposta.
+Qualquer SaaS centralizado que fizesse isso em escala seria derrubado pelo
+YouTube em semanas. A execução distribuída na máquina de cada usuário é a
+proteção natural — e o diferencial competitivo real do BrainIAc.

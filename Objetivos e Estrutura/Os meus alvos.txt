@@ -1,0 +1,76 @@
+OS MEUS ALVOS — BrainIAc
+
+Com a chegada do Agente RAG, o BrainIAc deixa de ser uma ferramenta de exportação
+e passa a ser o próprio ambiente de consulta. O usuário não precisa mais ir ao
+NotebookLM perguntar — ele pergunta diretamente ao BrainIAc, que responde com
+fonte, data e link do vídeo original.
+
+Isso muda o perfil dos alvos.
+
+─────────────────────────────────────────────────────────
+
+CONTEXTO INSTITUCIONAL (saúde pública)
+
+Gestão do Conhecimento
+Um gestor pergunta ao agente: "O que o CFM já disse sobre telemedicina?"
+Recebe resposta com trecho, data e link — sem assistir um vídeo sequer.
+Canais de hospitais, universidades, conselhos federais viram bases consultáveis internas.
+
+Formação e Capacitação
+Profissionais em campo consultam o agente em vez de assistir horas de gravação.
+Conteúdo da Fiocruz, ENSP, CONASS, CONASEMS vira tutor disponível 24h.
+
+Vigilância de Discurso Técnico
+O agente permite cruzar posicionamentos ao longo do tempo, com data precisa.
+Identificar mudanças de narrativa em saúde pública deixa de ser manual.
+
+Memória Institucional
+Webinars, audiências e seminários gravados deixam de morrer no YouTube.
+A instituição consulta o que já produziu como se fosse um arquivo vivo.
+
+─────────────────────────────────────────────────────────
+
+CONTEXTO GERAL
+
+Criadores de Conteúdo (caso de uso mais poderoso)
+Um criador com 5 anos de canal tem um ativo imenso que ele mesmo não acessa.
+Com o BrainIAc + Agente, ele pode:
+  · Perguntar ao próprio canal: "o que já falei sobre X?"
+  · Evitar repetição de conteúdo
+  · Criar um agente com a própria voz para responder a audiência
+  · Transformar o canal em produto usando o conteúdo como matéria-prima
+
+Educação (vestibular, concursos)
+O aluno pergunta ao agente do canal do professor que já conhece e confia.
+Recebe a resposta com a didática e linguagem específica daquele professor.
+Não é uma IA genérica — é o conhecimento daquele criador, consultável.
+
+Empresas e Treinamento Corporativo
+Onboarding, treinamentos e procedimentos gravados viram base RAG interna.
+Novo colaborador pergunta ao agente em vez de assistir 40 horas de vídeo.
+
+Jornalismo e Pesquisa
+Cruzar o que um especialista ou político disse em momentos diferentes,
+com data precisa e fonte verificável — diretamente no chat.
+
+─────────────────────────────────────────────────────────
+
+DOIS PERFIS DE USUÁRIO
+
+BYOK (Bring Your Own Key)
+Usuário técnico ou institucional que já tem conta em Gemini, OpenAI ou Claude.
+Cola a própria chave. Zero custo adicional. Controle total.
+Perfil: gestores, pesquisadores, criadores avançados, times de TI.
+
+BrainIAc Nativo (evolução prevista)
+Usuário que não quer criar conta em provedor de IA.
+Usa a chave gerenciada pelo BrainIAc. Paga por uso.
+Perfil: educadores, criadores de conteúdo, pequenas empresas.
+
+─────────────────────────────────────────────────────────
+
+A lógica que se repete em todos os alvos:
+
+Existe conhecimento valioso preso em vídeo.
+Existe alguém que precisa desse conhecimento agora, sem tempo de assistir tudo.
+O BrainIAc extrai, estrutura e responde — tudo no mesmo lugar.

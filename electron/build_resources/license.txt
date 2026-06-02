@@ -1,0 +1,52 @@
+BRAINIAC ENGINE — TERMOS DE USO E INFORMAÇÕES DE INSTALAÇÃO
+============================================================
+
+DOWNLOADS ADICIONAIS NECESSÁRIOS
+----------------------------------
+O BrainIAc Engine requer componentes adicionais que serão baixados
+automaticamente na primeira execução:
+
+  • Ollama (~50 MB)
+    Motor de inteligência artificial local. Permite usar o Agente IA
+    sem custos e sem conexão com servidores externos.
+
+  • Modelo de linguagem llama3.2:1b (~1,3 GB)
+    Baixado apenas na primeira vez que o Agente IA for utilizado.
+    O download é exibido com barra de progresso dentro do aplicativo.
+
+Uma conexão com a internet é necessária apenas para esses downloads
+iniciais. Após a configuração, o BrainIAc funciona completamente offline.
+
+------------------------------------------------------------
+
+TERMOS DE USO
+--------------
+Ao instalar o BrainIAc Engine, você concorda com os seguintes termos:
+
+1. USO PERMITIDO
+   O BrainIAc Engine destina-se a uso pessoal, educacional e de pesquisa.
+   O usuário é responsável por garantir que seu uso esteja em conformidade
+   com os Termos de Serviço do YouTube e as leis de direitos autorais aplicáveis.
+
+2. USO PROIBIDO
+   É proibido utilizar o BrainIAc Engine para redistribuição comercial
+   de conteúdo extraído sem o consentimento do criador original.
+
+3. INTEGRAÇÃO COM GOOGLE DRIVE
+   O acesso ao Google Drive é limitado a arquivos criados pelo próprio
+   aplicativo (escopo drive.file). Nenhum outro arquivo é acessado.
+
+4. CHAVES DE API
+   Chaves de API inseridas pelo usuário são armazenadas localmente e
+   nunca transmitidas para servidores do BrainIAc.
+
+5. SEM GARANTIA
+   O BrainIAc Engine é fornecido "como está", sem garantias de qualquer
+   tipo. O YouTube pode alterar sua plataforma a qualquer momento.
+
+6. LIMITAÇÃO DE RESPONSABILIDADE
+   CriAugu não se responsabiliza por danos indiretos decorrentes do
+   uso ou impossibilidade de uso do BrainIAc Engine.
+
+------------------------------------------------------------
+© 2026 CriAugu — CNPJ 65.131.075/0001-57  |  augusto.brasil@saude.gov.br

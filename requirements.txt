@@ -5,3 +5,9 @@ pandas
 google-auth
 google-auth-oauthlib
 google-api-python-client
+
+# --- Agente RAG ---
+rank_bm25
+openai
+anthropic
+google-genai
