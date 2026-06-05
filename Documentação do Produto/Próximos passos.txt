@@ -25,10 +25,10 @@ SPRINT IMEDIATO — PRODUTO (em execução)
 ✅ Badge "base desatualizada" na aba Configurar Agente
 ✅ Tooltip no toggle Busca Ampla/Restrita do chat
 ✅ brainiac_crash.log no .gitignore
+✅ Telemetria Posthog opt-in (ConsentModal + analytics.js)
+✅ Onboarding contextual (ProgressToast + hints por aba)
 
 ○ Botão "Exportar base" no Repositório (.zip de cerebro/)
-○ Onboarding contextual por aba (tooltips, não modal)
-○ Telemetria Posthog opt-in (modal de consentimento)
 
 ─────────────────────────────────────────
 QUANDO O PRODUTO ESTIVER PRONTO PARA LANÇAR

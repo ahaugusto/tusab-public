@@ -209,9 +209,9 @@ IMEDIATO (zero ou baixo esforço, alto impacto)
 ✅ Badge "base desatualizada" na aba Configurar Agente
 
 CURTO PRAZO (sprint de produto)
-○ Telemetria Posthog opt-in
-○ Botão "Exportar base" no Repositório
-○ Onboarding contextual por aba (tooltips, não modal)
+✅ Telemetria Posthog opt-in (ConsentModal + analytics.js)
+✅ Onboarding contextual — ProgressToast + hints por aba
+○ Botão "Exportar base" no Repositório (.zip de cerebro/)
 
 QUANDO PRONTO PARA LANÇAR (decisão pendente)
 → Ver "Documentação do Produto/Próximos passos.txt"
@@ -243,5 +243,11 @@ NOTAS DE EVOLUÇÃO
 [Junho 2026 — itens imediatos]
 · brainiac_crash.log adicionado ao .gitignore (segurança)
 · Tooltip hover no toggle Busca Ampla/Restrita do chat
-· Badge "N novos" no header da Base de Conhecimento quando desatualizada
-  (detecta txt mais novos que o índice via mtime)
+· Badge "N novos" na Base de Conhecimento quando desatualizada
+
+[Junho 2026 — curto prazo]
+· Posthog analytics opt-in (ConsentModal + 10 eventos nomeados)
+· Onboarding contextual: ProgressToast pós-indexação + hint no Repositório
+· Toggle busca ampla/restrita no chat com prompt diferente por modo
+· Latência do Ollama reduzida: sem query expansion, 4 chunks (era 6)
+· Base de ajuda embutida: 13.671 chars de documentação no cerebro/textos/
