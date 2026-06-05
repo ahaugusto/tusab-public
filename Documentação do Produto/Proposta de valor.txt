@@ -5,58 +5,95 @@ PROPOSTA DE VALOR — BrainIAc
 POSICIONAMENTO CENTRAL
 ─────────────────────────────────────────
 
-BrainIAc transforma conhecimento em vídeo em conhecimento consultável.
+BrainIAc é o seu cérebro digital.
+Agrega qualquer conhecimento que você coleta —
+vídeos, documentos, anotações — e responde suas perguntas
+com a fonte exata de onde veio cada informação.
 
 Não é uma IA genérica.
-É o conhecimento de quem você já confia —
-respondendo suas perguntas, com fonte, data e link do vídeo original.
+É o conhecimento que você escolheu, organizado do seu jeito,
+respondendo quando você precisar.
+
+─────────────────────────────────────────
+O QUE ENTRA NO CÉREBRO
+─────────────────────────────────────────
+
+· Canais do YouTube (legendas extraídas automaticamente)
+· PDFs — artigos, relatórios, apostilas
+· Word/DOCX — documentos, roteiros, transcrições
+· Markdown e TXT — notas, anotações, pesquisas
+· Texto colado diretamente — qualquer coisa que você copiar
+
+Tudo indexado localmente. Tudo consultável via chat.
+Tudo citando a fonte de origem.
 
 ─────────────────────────────────────────
 PARA CADA PERFIL
 ─────────────────────────────────────────
 
 Para o ALUNO:
-"Pare de assistir. Comece a perguntar.
- Monte sua base com os criadores que você já segue
- e consulte esse conhecimento quando precisar."
+"Combine o canal do seu professor com suas próprias anotações
+ e as apostilas do curso. Pergunte sobre qualquer tema
+ e receba a resposta na linguagem e didática de quem você já confia."
+
+Para o PROFISSIONAL:
+"Seus relatórios, apresentações e artigos de referência
+ em um único lugar consultável. Sem buscar em pastas,
+ sem reler tudo — só perguntar."
 
 Para o CRIADOR:
 "Seu canal tem anos de conhecimento acumulado.
  Seus inscritos não conseguem acessar tudo.
- Transforme seu arquivo em um produto que responde por você — 24h por dia."
+ Adicione seus roteiros, materiais e pesquisas.
+ Transforme tudo isso em um assistente com a sua voz."
 
 Para a INSTITUIÇÃO:
-"Vocês investiram para produzir esse conteúdo.
- Ele merece trabalhar mais do que uma vez.
- Transformamos seu acervo de lives e aulas em infraestrutura consultável."
+"Lives, webinars, documentos internos, atas de reunião.
+ Tudo o que foi produzido, agora consultável como um arquivo vivo.
+ Sem depender de servidor externo. Dados ficam na sua rede."
 
 ─────────────────────────────────────────
 DIFERENCIAIS REAIS
 ─────────────────────────────────────────
 
-· Funciona com qualquer canal do YouTube — público ou privado (com acesso)
-· Responde com a voz e didática do criador, não com IA genérica
-· Cita a fonte: título, data e link do vídeo original
-· Roda local — dados do usuário não saem da máquina
-· Gratuito para uso básico (Ollama); escalável para uso profissional
+· Multi-fonte — YouTube + PDFs + DOCX + Markdown + texto livre
+· Responde com a voz e didática da fonte original, não com IA genérica
+· Cita sempre: título, data e link da origem
+· Roda 100% local — dados nunca saem da máquina
+· Gratuito para uso básico (Ollama); escalável com Groq, GPT ou Claude
+· Gestão completa via interface — adicionar, visualizar, deletar fontes
 · Já tem case real: AUVP / Investidor Sardinha
+
+─────────────────────────────────────────
+POSIÇÃO NO MERCADO
+─────────────────────────────────────────
+
+Antes do v0.4.0, BrainIAc competia com ferramentas de YouTube.
+Agora compete com sistemas de gestão de conhecimento pessoal (PKM):
+NotebookLM, Notion AI, Obsidian AI, Mem, Roam Research AI.
+
+O diferencial que nenhum deles tem:
+· Roda local, sem servidor, sem assinatura obrigatória
+· Privacidade total — dados ficam na máquina do usuário
+· Custo zero para uso básico (Ollama + Groq free tier)
+· YouTube como fonte nativa com extração automática
 
 ─────────────────────────────────────────
 VALIDAÇÃO
 ─────────────────────────────────────────
 
 A ideia foi comprada pela AUVP antes de existir como produto.
-O produto desktop foi construído e está funcional.
+O produto desktop está funcional com todas as fontes implementadas.
 O próximo passo é a primeira venda B2B como plataforma.
 
 ─────────────────────────────────────────
 PITCH DE UM PARÁGRAFO
 ─────────────────────────────────────────
 
-"Criadores educacionais publicam centenas de vídeos — e esse conteúdo
-fica dormindo no YouTube depois da estreia. O BrainIAc transforma esse
-arquivo em um chatbot com a voz do próprio criador: o aluno pergunta,
-o sistema responde com base no que o professor já disse, citando o vídeo
-de origem. Para o aluno, é como ter o professor disponível 24h. Para o
-criador, é monetizar o que já foi produzido. A AUVP já validou o modelo.
-Agora estamos abrindo para outros criadores e instituições."
+"BrainIAc é o seu cérebro digital. Você extrai canais do YouTube,
+adiciona seus PDFs, documentos e anotações — tudo vai para uma base
+de conhecimento que responde suas perguntas citando a fonte exata.
+Roda na sua máquina, funciona offline, zero custo com Ollama.
+Para criadores, vira um assistente com a própria voz.
+Para instituições, transforma qualquer acervo em infraestrutura
+consultável. A AUVP já validou o modelo. Agora escalamos."
