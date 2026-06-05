@@ -205,8 +205,8 @@ MATRIZ DE PRIORIDADES CONSOLIDADA
 
 IMEDIATO (zero ou baixo esforço, alto impacto)
 ✅ Adicionar brainiac_crash.log ao .gitignore
-○ Tooltip no toggle Busca Ampla no chat
-○ Badge "base desatualizada" na aba Configurar Agente
+✅ Tooltip no toggle Busca Ampla no chat
+✅ Badge "base desatualizada" na aba Configurar Agente
 
 CURTO PRAZO (sprint de produto)
 ○ Primeira venda B2B formal (nenhum código)
@@ -236,3 +236,9 @@ NOTAS DE EVOLUÇÃO
 · Latência do chat reduzida: query expansion desabilitada para Ollama
 · Chunks reduzidos de 6→4 para Ollama (contexto menor = resposta mais rápida)
 · Avaliação estratégica inicial registrada neste documento
+
+[Junho 2026 — itens imediatos]
+· brainiac_crash.log adicionado ao .gitignore (segurança)
+· Tooltip hover no toggle Busca Ampla/Restrita do chat
+· Badge "N novos" no header da Base de Conhecimento quando desatualizada
+  (detecta txt mais novos que o índice via mtime)
