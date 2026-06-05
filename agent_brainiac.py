@@ -97,6 +97,10 @@ def get_agent_status() -> dict:
     if not index_count and canais_indexados:
         index_count = sum(c['chunks'] for c in canais_indexados)
 
+    # Sem config salvo, Ollama é o padrão — sempre configurado
+    if not provider:
+        provider = 'ollama'
+
     return {
         'configured':       bool(provider and (config.get('api_key') or provider == 'ollama')),
         'provider':         provider,
@@ -221,9 +225,7 @@ def _enriquecer_documento(texto: str, tags: list, descricao: str = '', n_keyword
 # ==========================================
 
 def indexar(canal_nome: str, canal_prefixo: str, callback=None, stop_event=None) -> int:
-    config = carregar_config()
-    if not config.get('provider') or not config.get('api_key'):
-        raise ValueError("Configure a chave de API antes de indexar.")
+    # Indexação BM25 é 100% local — não requer chave de API.
 
     if callback: callback("🔍 Lendo arquivos do corpus...")
 

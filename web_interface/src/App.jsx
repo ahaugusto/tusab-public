@@ -50,11 +50,12 @@ function logMeta(msg, darkMode) {
 function OllamaSetup({ darkMode, ollamaStatus, setOllamaStatus, btnFocus, apiBase }) {
   const [pullProgress, setPullProgress] = React.useState(null);
   const [pulling, setPulling] = React.useState(false);
-  const hasModel = ollamaStatus.models && ollamaStatus.models.some(m => m.includes('llama3.2'));
+  const hasModel = ollamaStatus.models && ollamaStatus.models.length > 0;
+  const modelName = hasModel ? ollamaStatus.models[0] : 'llama3.2:1b';
 
-  React.useEffect(() => {
-    axios.get(`${apiBase}/agent/ollama/status`).then(r => setOllamaStatus(r.data)).catch(() => {});
-  }, []);
+  const refresh = () => axios.get(`${apiBase}/agent/ollama/status`).then(r => setOllamaStatus(r.data)).catch(() => {});
+
+  React.useEffect(() => { refresh(); }, []);
 
   React.useEffect(() => {
     if (!pulling) return;
@@ -97,28 +98,30 @@ function OllamaSetup({ darkMode, ollamaStatus, setOllamaStatus, btnFocus, apiBas
       {ollamaStatus.running && !hasModel && !pulling && (
         <div className="space-y-2">
           <p className={`text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-            Modelo não instalado. Clique para baixar <strong>llama3.2:1b</strong> (~1.3 GB).
+            Nenhum modelo detectado. Baixe o <strong>llama3.2:1b</strong> (~1.3 GB) ou verifique se ja instalou.
           </p>
-          <button onClick={startPull}
-            className={`w-full py-2 rounded-xl text-xs font-bold transition-colors bg-secondary/20 text-secondary hover:bg-secondary/30 ${btnFocus}`}>
-            Baixar Modelo
-          </button>
-        </div>
-      )}
-
-      {pulling && pullProgress && (
-        <div className="space-y-2">
-          <p className={`text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>{pullProgress.message}</p>
-          <div className={`w-full h-1.5 rounded-full overflow-hidden ${darkMode ? 'bg-white/10' : 'bg-slate-200'}`}>
-            <div className="h-full bg-secondary rounded-full transition-all duration-300" style={{ width: `${pullProgress.pct || 0}%` }} />
+          <div className="flex gap-2">
+            <button onClick={startPull}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-colors bg-secondary/20 text-secondary hover:bg-secondary/30 ${btnFocus}`}>
+              Baixar Modelo
+            </button>
+            <button onClick={refresh} title="Verificar novamente"
+              className={`px-3 py-2 rounded-xl text-xs font-bold border transition-colors ${darkMode ? 'border-white/15 text-slate-300 hover:bg-white/8' : 'border-slate-200 text-slate-600 hover:bg-slate-100'} ${btnFocus}`}>
+              <RefreshCw size={13} />
+            </button>
           </div>
-          <p className={`text-[10px] ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{pullProgress.pct || 0}%</p>
         </div>
       )}
 
       {ollamaStatus.running && hasModel && (
-        <div className={`flex items-center gap-2 text-[11px] font-medium text-secondary`}>
-          <CheckCircle2 size={13} /> Pronto — llama3.2:1b instalado
+        <div className="flex items-center justify-between">
+          <div className={`flex items-center gap-2 text-[11px] font-medium text-secondary`}>
+            <CheckCircle2 size={13} /> Pronto: <span className="font-mono">{modelName}</span>
+          </div>
+          <button onClick={refresh} title="Atualizar"
+            className={`p-1 rounded transition-colors ${darkMode ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`}>
+            <RefreshCw size={11} />
+          </button>
         </div>
       )}
     </div>
@@ -610,6 +613,8 @@ function App() {
   const [canalMeta,        setCanalMeta]        = useState(null);
   const [ollamaStatus,     setOllamaStatus]     = useState({ running: false, models: [] });
   const [canaisExtras,     setCanaisExtras]     = useState([]);
+  const [history,          setHistory]          = useState([]);
+  const [useExternalProvider, setUseExternalProvider] = useState(false);
   const [chatMessages,     setChatMessages]     = useState([]);
   const [chatInput,        setChatInput]        = useState("");
   const [chatLoading,      setChatLoading]      = useState(false);
@@ -621,6 +626,15 @@ function App() {
 
 
   useEffect(() => { document.documentElement.classList.toggle('dark', darkMode); }, [darkMode]);
+
+  // Solicita permissão de notificação na primeira abertura
+  useEffect(() => {
+    if (Notification.permission === 'default') Notification.requestPermission();
+  }, []);
+
+  useEffect(() => {
+    axios.get(`${API_BASE}/history`).then(r => setHistory(r.data)).catch(() => {});
+  }, []);
 
   // Sincroniza com mudanças do tema do sistema quando o usuário não definiu preferência
   useEffect(() => {
@@ -677,8 +691,20 @@ function App() {
 
   useEffect(() => {
     axios.get(`${API_BASE}/agent/config`).then(r => {
-      if (r.data.provider) setAgentProvider(r.data.provider);
-      if (r.data.api_key)  setAgentApiKey(r.data.api_key);
+      const hasExternalKey = r.data.provider && r.data.provider !== 'ollama' && r.data.api_key;
+      if (hasExternalKey) {
+        setAgentProvider(r.data.provider);
+        setAgentApiKey('');  // chave nunca pre-carregada — usuario digita quando quiser usar
+        setUseExternalProvider(true);
+      } else {
+        // Sem chave válida — garante Ollama como padrão
+        setAgentProvider('ollama');
+        setUseExternalProvider(false);
+        axios.post(`${API_BASE}/agent/config`, { provider: 'ollama', api_key: '' })
+          .then(() => axios.get(`${API_BASE}/agent/status`))
+          .then(r => setAgentStatus(r.data))
+          .catch(() => {});
+      }
     }).catch(() => {});
   }, []);
 
@@ -715,6 +741,17 @@ function App() {
     const s = status.stats.status;
     if (s === 'Finalizado ✓' && prevExtractionStatus.current !== 'Finalizado ✓') {
       setShowPostModal(true);
+
+      const notify = () => new Notification('BrainIAc — Extração concluída!', {
+        body: status.stats.videos_processed + ' vídeos extraídos de @' + (status.stats.canal_nome || ''),
+        icon: '/logo.png',
+      });
+
+      if (Notification.permission === 'granted') {
+        notify();
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(p => { if (p === 'granted') notify(); });
+      }
     }
     prevExtractionStatus.current = s;
   }, [status.stats.status]);
@@ -733,12 +770,25 @@ function App() {
     setConfigurando(false);
   };
 
+  const handleRemoveApiKey = async () => {
+    setAgentApiKey('');
+    setTestKeyResult(null);
+    setAgentKeyError('');
+    await axios.post(`${API_BASE}/agent/config`, { provider: 'ollama', api_key: '' }).catch(() => {});
+    setUseExternalProvider(false);
+    setAgentProvider('ollama');
+    const r = await axios.get(`${API_BASE}/agent/status`).catch(() => null);
+    if (r) setAgentStatus(r.data);
+  };
+
   const handleSaveAgentConfig = async () => {
-    if (!agentApiKey.trim()) { setAgentKeyError(t('agent.key_error_required')); return; }
+    if (useExternalProvider && !agentApiKey.trim()) { setAgentKeyError(t('agent.key_error_required')); return; }
     setSavingConfig(true); setAgentKeyError(""); setConfigSaved(false); setTestKeyResult(null);
+    const provider = useExternalProvider ? agentProvider : 'ollama';
+    const apiKey   = useExternalProvider ? agentApiKey.trim() : '';
     try {
       const res = await axios.post(`${API_BASE}/agent/config`, {
-        provider: agentProvider, api_key: agentApiKey.trim()
+        provider, api_key: apiKey
       });
       if (res.data.error) setAgentKeyError(res.data.message);
       else { setConfigSaved(true); setTimeout(() => setConfigSaved(false), 4000); }
@@ -1323,6 +1373,40 @@ function App() {
                 onOpen={canalConfigurado ? () => axios.get(`${API_BASE}/open-folder?name=gestao`) : undefined} />
             </div>
 
+            {/* Histórico de Canais */}
+            {history.length > 0 && !isRunning && (
+              <section aria-label="Histórico de extrações">
+                <div className={`rounded-2xl border overflow-hidden ${darkMode ? 'bg-white/4 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
+                  <div className={`px-4 lg:px-5 py-3 border-b flex items-center gap-2 ${darkMode ? 'bg-white/4 border-white/10' : 'bg-slate-50 border-slate-100'}`}>
+                    <Globe size={14} className="text-primary" aria-hidden="true" />
+                    <h3 className={`text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-white' : 'text-slate-700'}`}>Canais Extraídos</h3>
+                    <span className={`ml-auto text-[10px] ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{history.length} canal{history.length !== 1 ? 'is' : ''}</span>
+                  </div>
+                  <div className="divide-y divide-white/5">
+                    {history.map((h, i) => (
+                      <div key={i} className={`px-4 lg:px-5 py-3 flex items-center gap-3 ${darkMode ? 'hover:bg-white/4' : 'hover:bg-slate-50'} transition-colors`}>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${darkMode ? 'bg-primary/20 text-primary' : 'bg-violet-100 text-violet-700'}`}>
+                          {h.canal[0]?.toUpperCase() || '?'}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className={`text-xs font-bold truncate ${darkMode ? 'text-white' : 'text-slate-800'}`}>@{h.canal}</p>
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${h.cobertura >= 80 ? darkMode ? 'bg-secondary/20 text-secondary' : 'bg-emerald-100 text-emerald-700' : darkMode ? 'bg-warning/20 text-warning' : 'bg-amber-100 text-amber-700'}`}>{h.cobertura}%</span>
+                          </div>
+                          <p className={`text-[10px] ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{h.extraidos} vídeos · {h.ultima_extracao}</p>
+                        </div>
+                        <button
+                          onClick={() => { setCanalInput(h.canal_url); }}
+                          className={`shrink-0 px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-colors ${darkMode ? 'border-white/15 text-slate-300 hover:bg-white/8' : 'border-slate-200 text-slate-600 hover:bg-slate-100'}`}>
+                          Usar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+
             {/* Log de Atividade */}
             <section aria-labelledby="log-heading"
               className={`rounded-2xl overflow-hidden flex flex-col border ${darkMode ? 'bg-white/4 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
@@ -1457,83 +1541,102 @@ function App() {
                       style={{ overflow: 'hidden' }}>
                 <div className="p-5 space-y-4">
 
-                  {/* Seletor de provedor */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {[
-                      { id: 'gemini',    label: 'Google Gemini'   },
-                      { id: 'openai',    label: 'OpenAI'          },
-                      { id: 'anthropic', label: 'Anthropic Claude' },
-                      { id: 'ollama',    label: 'Local (Ollama)'  },
-                    ].map(({ id, label }) => (
-                      <button key={id}
-                        onClick={() => { setAgentProvider(id); if (id === 'ollama') axios.get(`${API_BASE}/agent/ollama/status`).then(r => setOllamaStatus(r.data)).catch(() => {}); }}
-                        className={`relative p-3 rounded-xl border text-xs font-bold text-left transition-all ${btnFocus}
-                          ${agentProvider === id
-                            ? 'border-primary bg-primary/15 text-primary'
-                            : darkMode ? 'border-white/15 text-slate-400 hover:border-white/30' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
-                        {label}
-                        {id === 'ollama' && <span className={`absolute top-1 right-1 text-[8px] px-1 rounded font-bold ${darkMode ? 'bg-secondary/20 text-secondary' : 'bg-emerald-100 text-emerald-700'}`}>Grátis</span>}
-                      </button>
-                    ))}
-                  </div>
+                  {/* Ollama — provedor padrão */}
+                  <OllamaSetup darkMode={darkMode} ollamaStatus={ollamaStatus} setOllamaStatus={setOllamaStatus} btnFocus={btnFocus} apiBase={API_BASE} />
 
-                  {/* Ollama — setup panel */}
-                  {agentProvider === 'ollama' && (
-                    <OllamaSetup darkMode={darkMode} ollamaStatus={ollamaStatus} setOllamaStatus={setOllamaStatus} btnFocus={btnFocus} apiBase={API_BASE} />
-                  )}
-
-                  {/* Link + campo de chave (apenas para provedores externos) */}
-                  {agentProvider !== 'ollama' && (<>
-                  <div className={`text-[11px] flex items-center gap-1.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                    <Info size={11} aria-hidden="true" />
-                    {agentProvider === 'gemini'    && <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="underline underline-offset-2 flex items-center gap-1">{t('agent.get_key_gemini')} <ExternalLink size={9} /></a>}
-                    {agentProvider === 'openai'    && <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="underline underline-offset-2 flex items-center gap-1">{t('agent.get_key_openai')} <ExternalLink size={9} /></a>}
-                    {agentProvider === 'anthropic' && <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noreferrer" className="underline underline-offset-2 flex items-center gap-1">{t('agent.get_key_anthropic')} <ExternalLink size={9} /></a>}
-                  </div>
-                  <div className="space-y-2">
-                    <label className={`text-[11px] font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                      {agentProvider === 'anthropic' ? t('agent.key_label_claude') : t('agent.key_label')}
-                    </label>
-                    <div className={`flex items-center gap-2 rounded-xl border px-3 py-2 transition-all focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/40 ${darkMode ? 'bg-white/5 border-white/20' : 'bg-white border-slate-300'}`}>
-                      <input type={showApiKey ? 'text' : 'password'}
-                        placeholder={t('agent.key_placeholder')}
-                        value={agentApiKey} onChange={e => { setAgentApiKey(e.target.value); setAgentKeyError(""); }}
-                        className={`flex-1 bg-transparent text-xs font-mono outline-none placeholder:text-slate-400 ${darkMode ? 'text-white' : 'text-slate-800'}`} />
-                      <button onClick={() => setShowApiKey(!showApiKey)} className={`shrink-0 ${darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500'} ${btnFocus}`}
-                        aria-label={showApiKey ? t('agent.key_hide') : t('agent.key_show')}>
-                        {showApiKey ? <EyeOff size={14} /> : <Eye size={14} />}
-                      </button>
+                  {/* Toggle provedor externo */}
+                  <div className={`flex items-center justify-between py-3 border-t ${darkMode ? 'border-white/10' : 'border-slate-100'}`}>
+                    <div>
+                      <p className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-slate-700'}`}>Usar minha chave de API</p>
+                      <p className={`text-[10px] mt-0.5 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Gemini, OpenAI ou Anthropic Claude</p>
                     </div>
-                  </div>
-                  </>)}
-
-
-                  {agentKeyError && (
-                    <p role="alert" className="text-[11px] text-danger flex items-center gap-1">
-                      <AlertTriangle size={11} /> {agentKeyError}
-                    </p>
-                  )}
-
-                  {testKeyResult && (
-                    <p role="status" className={`text-[11px] flex items-center gap-1 font-medium ${testKeyResult.ok ? 'text-secondary' : 'text-danger'}`}>
-                      {testKeyResult.ok ? <CheckCircle2 size={11} /> : <AlertTriangle size={11} />} {testKeyResult.message}
-                    </p>
-                  )}
-
-                  <div className="flex gap-2">
-                    <button onClick={handleSaveAgentConfig} disabled={savingConfig || !agentApiKey.trim()}
-                      className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed
-                        ${configSaved ? 'bg-secondary/20 text-secondary' : 'bg-primary/20 text-primary hover:bg-primary/30'} ${btnFocus}`}>
-                      {savingConfig ? <Loader2 size={12} className="animate-spin inline mr-1" /> : null}
-                      {savingConfig ? t('agent.saving') : configSaved ? `✓ ${t('agent.config_saved')}` : t('agent.save_config')}
-                    </button>
-                    <button onClick={handleTestKey} disabled={testingKey || !agentStatus.configured}
-                      title={t('agent.test_key')}
-                      className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed
-                        ${darkMode ? 'border-white/15 text-slate-300 hover:bg-white/8' : 'border-slate-200 text-slate-600 hover:bg-slate-100'} ${btnFocus}`}>
-                      {testingKey ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
+                    <button
+                      role="switch" aria-checked={useExternalProvider}
+                      onClick={() => {
+                        const next = !useExternalProvider;
+                        setUseExternalProvider(next);
+                        if (!next) {
+                          setAgentProvider('ollama');
+                          axios.post(`${API_BASE}/agent/config`, { provider: 'ollama', api_key: '' }).catch(() => {});
+                        }
+                      }}
+                      className={`relative shrink-0 inline-flex h-5 w-9 rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${useExternalProvider ? 'bg-primary' : darkMode ? 'bg-white/15' : 'bg-slate-200'}`}>
+                      <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${useExternalProvider ? 'translate-x-4' : 'translate-x-0'}`} />
                     </button>
                   </div>
+
+                  {/* Seletor + chave de API (apenas se toggle ON) */}
+                  <AnimatePresence initial={false}>
+                    {useExternalProvider && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2, ease: 'easeInOut' }}
+                        style={{ overflow: 'hidden' }}
+                        className="space-y-3">
+
+                        <div className="grid grid-cols-3 gap-2">
+                          {[
+                            { id: 'gemini',    label: 'Google Gemini'    },
+                            { id: 'openai',    label: 'OpenAI'           },
+                            { id: 'anthropic', label: 'Anthropic Claude' },
+                          ].map(({ id, label }) => (
+                            <button key={id} onClick={() => setAgentProvider(id)}
+                              className={`p-2.5 rounded-xl border text-xs font-bold text-left transition-all ${btnFocus}
+                                ${agentProvider === id
+                                  ? 'border-primary bg-primary/15 text-primary'
+                                  : darkMode ? 'border-white/15 text-slate-400 hover:border-white/30' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+
+                        <div className={`text-[11px] flex items-center gap-1.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                          <Info size={11} />
+                          {agentProvider === 'gemini'    && <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="underline underline-offset-2 flex items-center gap-1">{t('agent.get_key_gemini')} <ExternalLink size={9} /></a>}
+                          {agentProvider === 'openai'    && <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="underline underline-offset-2 flex items-center gap-1">{t('agent.get_key_openai')} <ExternalLink size={9} /></a>}
+                          {agentProvider === 'anthropic' && <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noreferrer" className="underline underline-offset-2 flex items-center gap-1">{t('agent.get_key_anthropic')} <ExternalLink size={9} /></a>}
+                        </div>
+
+                        <div className={`flex items-center gap-2 rounded-xl border px-3 py-2 transition-all focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/40 ${darkMode ? 'bg-white/5 border-white/20' : 'bg-white border-slate-300'}`}>
+                          <input type={showApiKey ? 'text' : 'password'}
+                            placeholder={t('agent.key_placeholder')}
+                            value={agentApiKey} onChange={e => { setAgentApiKey(e.target.value); setAgentKeyError(""); }}
+                            className={`flex-1 bg-transparent text-xs font-mono outline-none placeholder:text-slate-400 ${darkMode ? 'text-white' : 'text-slate-800'}`} />
+                          <button onClick={() => setShowApiKey(!showApiKey)} className={`shrink-0 ${darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500'} ${btnFocus}`}
+                            aria-label={showApiKey ? t('agent.key_hide') : t('agent.key_show')}>
+                            {showApiKey ? <EyeOff size={14} /> : <Eye size={14} />}
+                          </button>
+                        </div>
+
+                        {agentKeyError && (
+                          <p role='alert' className='text-[11px] text-danger flex items-center gap-1'>
+                            <AlertTriangle size={11} /> {agentKeyError}
+                          </p>
+                        )}
+                        {testKeyResult && (
+                          <p role='status' className={`text-[11px] flex items-center gap-1 font-medium ${testKeyResult.ok ? 'text-secondary' : 'text-danger'}`}>
+                            {testKeyResult.ok ? <CheckCircle2 size={11} /> : <AlertTriangle size={11} />} {testKeyResult.message}
+                          </p>
+                        )}
+                        <div className='flex gap-2'>
+                          <button onClick={handleRemoveApiKey}
+                              className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-colors border-danger/40 text-danger hover:bg-danger/10 ${btnFocus}`}>
+                              Limpar
+                            </button>
+                          <button onClick={handleSaveAgentConfig} disabled={savingConfig || !agentApiKey.trim()}
+                            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${configSaved ? 'bg-secondary/20 text-secondary' : 'bg-primary/20 text-primary hover:bg-primary/30'} ${btnFocus}`}>
+                            {savingConfig ? <Loader2 size={12} className='animate-spin inline mr-1' /> : null}
+                            {savingConfig ? t('agent.saving') : configSaved ? `✓ ${t('agent.config_saved')}` : t('agent.save_config')}
+                          </button>
+                          <button onClick={handleTestKey} disabled={testingKey || !agentStatus.configured}
+                            title={t('agent.test_key')}
+                            className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${darkMode ? 'border-white/15 text-slate-300 hover:bg-white/8' : 'border-slate-200 text-slate-600 hover:bg-slate-100'} ${btnFocus}`}>
+                            {testingKey ? <Loader2 size={12} className='animate-spin' /> : <Zap size={12} />}
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
                     </motion.div>
                   )}
@@ -1665,9 +1768,15 @@ function App() {
                       <p className={`text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                         {agentStatus.indexed ? t('agent.index_note_update') : t('agent.index_note_new')}
                       </p>
-                      {!agentStatus.configured && (
+                      {!agentStatus.configured && !(ollamaStatus.running && ollamaStatus.models?.length > 0) && (
                         <p className={`text-[11px] flex items-center gap-1 ${darkMode ? 'text-warning/80' : 'text-amber-600'}`}>
-                          <AlertTriangle size={11} aria-hidden="true" /> {t('agent.index_prereq_key')}
+                          <AlertTriangle size={11} aria-hidden='true' />
+                          {ollamaStatus.running ? 'Baixe o modelo Ollama acima para habilitar a indexacao.' : t('agent.index_prereq_key')}
+                        </p>
+                      )}
+                      {false && !useExternalProvider && (ollamaStatus.models?.length === 0) && (
+                        <p className={`text-[11px] flex items-center gap-1 ${darkMode ? 'text-warning/80' : 'text-amber-600'}`}>
+                          <AlertTriangle size={11} aria-hidden='true' /> Baixe o modelo Ollama acima para habilitar a indexacao.
                         </p>
                       )}
                       {!canalConfigurado && (
@@ -1681,7 +1790,7 @@ function App() {
                         </p>
                       )}
                       <button onClick={handleAgentIndex}
-                        disabled={!agentStatus.configured || !canalConfigurado}
+                        disabled={!canalConfigurado}
                         className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed
                           ${agentStatus.indexed ? `${darkMode ? 'bg-white/8 text-slate-300 hover:bg-white/12' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}` : 'bg-accent/20 text-accent hover:bg-accent/30'} ${btnFocus}`}>
                         <RefreshCw size={13} />

@@ -155,6 +155,14 @@ def run_motor():
         else:
             state.stats["status"] = "Finalizado ✓"
             state.stats["progress"] = 100
+
+        # Auto-reset para Ocioso após 15s
+        def _reset_status():
+            time.sleep(15)
+            if not state.is_running:
+                state.stats["status"]   = "Ocioso"
+                state.stats["progress"] = 0
+        threading.Thread(target=_reset_status, daemon=True).start()
     except Exception as e:
         print(f"❌ ERRO NO MOTOR: {e}")
         state.stats["status"] = "Erro"
@@ -297,6 +305,44 @@ def cancel_engine():
         state.stats["status"] = "Cancelando..."
         return {"message": "Cancelando"}
     return {"message": "Motor não está rodando"}
+
+
+@app.get("/history")
+def get_history():
+    """Retorna resumo de todas as extrações anteriores a partir dos CSVs de gestão."""
+    import glob
+    import pandas as pd
+    history = []
+    pattern = os.path.join(motor_brainiac.GESTAO_DIR, "*_base.csv")
+    for csv_path in sorted(glob.glob(pattern), key=os.path.getmtime, reverse=True):
+        try:
+            df = pd.read_csv(csv_path, encoding="utf-8-sig")
+            prefixo = os.path.basename(csv_path).replace("_base.csv", "")
+            total   = len(df)
+            sucesso = int((df["Status"] == "Sucesso").sum()) if "Status" in df.columns else 0
+            sem_leg = int((df["Status"] == "Sem Legenda").sum()) if "Status" in df.columns else 0
+            ultima  = df["Data_Extracao"].max() if "Data_Extracao" in df.columns else ""
+            canal_url = f"https://www.youtube.com/@{prefixo}"
+
+            # Tenta recuperar a URL real do primeiro registro
+            if "Link" in df.columns:
+                link = df["Link"].dropna().iloc[0] if len(df) > 0 else ""
+                m = re.search(r"@([^/?\s]+)", str(link))
+                if m:
+                    canal_url = f"https://www.youtube.com/@{m.group(1)}"
+
+            history.append({
+                "canal":          prefixo,
+                "canal_url":      canal_url,
+                "total":          total,
+                "extraidos":      sucesso,
+                "sem_legenda":    sem_leg,
+                "cobertura":      round(sucesso / total * 100) if total > 0 else 0,
+                "ultima_extracao": str(ultima),
+            })
+        except Exception:
+            pass
+    return history
 
 
 @app.get("/open-folder")
