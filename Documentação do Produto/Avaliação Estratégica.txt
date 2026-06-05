@@ -1,0 +1,238 @@
+AVALIAÇÃO ESTRATÉGICA — BrainIAc Engine
+© 2026 CriAugu — Atualizado: Junho 2026
+
+Análise crítica sob seis perspectivas da cadeia de produto digital.
+Cada pilar mapeia o que está sólido, o que preocupa e as ações prioritárias.
+
+─────────────────────────────────────────
+STATUS GERAL
+─────────────────────────────────────────
+
+O produto está tecnicamente maduro para v1.0.
+O gargalo agora não é técnico — é de go-to-market.
+Cada semana sem a primeira venda é uma semana de validação desperdiçada.
+
+─────────────────────────────────────────
+1. ARQUITETO DE SOFTWARE
+─────────────────────────────────────────
+
+SÓLIDO
+· Separação limpa: motor de extração / agente RAG / API
+· Frontend modularizado em 15 componentes com responsabilidade única
+· BM25 local eliminou dependência de embeddings e APIs externas
+· Hooks customizados (useStatus, useAgentStatus) isolam side effects
+· services/api.js centraliza todas as chamadas HTTP
+
+PREOCUPA
+· App.jsx ~1.300 linhas orquestrando ~40 estados — "God Component"
+  Vai virar gargalo de manutenção conforme o produto cresce.
+  Próxima refatoração: extrair estado global para Context API ou Zustand.
+
+· api_brainiac.py ~700 linhas sem separação rotas/serviços/repositório
+  Para a fase atual é aceitável, mas dificulta testes e crescimento.
+  Arquitetura ideal: routers FastAPI separados por domínio.
+
+· Ausência total de testes automatizados
+  Qualquer refactor é feito "no escuro". Risco crescente.
+
+AÇÕES PRIORITÁRIAS
+○ Implementar testes de integração mínimos nos endpoints críticos
+  (extração, indexação, chat) — protege contra regressões
+○ Migrar estado global do App.jsx para Context API
+  quando o produto entrar em fase de crescimento
+○ Separar api_brainiac.py em routers por domínio na v2
+
+DÉBITO TÉCNICO CRÍTICO
+Ausência de testes automatizados. Investimento de maior retorno agora.
+
+─────────────────────────────────────────
+2. PRODUCT MANAGER
+─────────────────────────────────────────
+
+SÓLIDO
+· Proposta de valor clara no Day 1: extrai canal, indexa, funciona
+· Jornada documentada em 6 passos
+· Base de documentos próprios como driver natural de retenção
+  (cada arquivo adicionado aumenta custo de troca)
+
+PREOCUPA
+· Métricas inexistentes
+  Não sabemos quantos usuários têm, onde travam, qual feature usam.
+  O produto evolui por intuição. Posthog precisa sair do backlog.
+
+· Jornada com atritos de ativação
+  instalar → extrair → indexar → perguntar ainda gera dúvidas.
+  O onboarding explica mas não guia. O usuário ainda se pergunta
+  "o que faço agora?" em momentos críticos.
+
+· Day 7 e Day 30 não estão pensados
+  O produto capta bem no Day 1. Retenção de médio prazo não está mapeada.
+  O que traz o usuário de volta além da primeira extração?
+
+AÇÕES PRIORITÁRIAS
+○ Implementar Posthog (opt-in) — saber onde os usuários travam
+○ Criar onboarding interativo contextual (tooltip por aba, não só modal)
+○ Definir métrica de retenção: "usuário que adicionou 2+ fontes diferentes"
+○ Medir: tempo até primeiro chat bem-sucedido (Time to Value)
+
+─────────────────────────────────────────
+3. DESIGNER DE PRODUTO (UX)
+─────────────────────────────────────────
+
+SÓLIDO
+· Home com cards é clara e contextual (badges com dados reais)
+· Chat flutuante é o padrão correto — acessível de qualquer aba
+· Sidebar recolhível resolve o problema de espaço
+· Tema automático via prefers-color-scheme
+
+PREOCUPA
+· Indexação desatualizada sem indicação visual
+  O usuário não sabe que tem novos vídeos para indexar.
+  Falta: badge "X novos vídeos desde a última indexação"
+  na aba Configurar Agente ou na home.
+
+· Toggle "Restrita/Ampla" sem contexto para usuário novo
+  Está no header do chat sem explicação inline.
+  Um usuário novo não entende o que significa sem ler documentação.
+  Falta: tooltip ou descrição na primeira vez.
+
+· Estado da base pouco transparente
+  Para saber o status da base, o usuário precisa navegar até
+  Configurar Agente. Deveria ser visível na home ou no chat.
+
+· Mobile inviável para extração
+  Sidebar, log em tempo real e campos de configuração são inutilizáveis
+  em tela pequena. Não é prioridade agora (público usa desktop),
+  mas precisa estar no radar para expansão.
+
+AÇÕES PRIORITÁRIAS
+○ Badge "X novos vídeos para indexar" — indicador de base desatualizada
+○ Tooltip no toggle Busca Ampla/Restrita — explica na primeira vez
+○ Indicador de estado da base na home card "Configurar Agente"
+
+─────────────────────────────────────────
+4. ENGENHEIRO DE SEGURANÇA
+─────────────────────────────────────────
+
+SÓLIDO
+· Dados nunca saem da máquina por design (local-first)
+· OAuth com escopo drive.file mínimo
+· Sem servidor central para ser atacado
+· Extração roda no IP residencial do usuário
+
+PREOCUPA
+· API sem autenticação
+  Qualquer processo local pode chamar os endpoints em localhost:8001.
+  Aceitável para desktop single-user. Problemático se migrar para web
+  ou modo servidor institucional.
+
+· Chaves de API em texto plano (agent_config.json)
+  Para uso pessoal é ok. Para distribuição comercial deveria usar
+  o keychain do sistema operacional (Electron tem suporte nativo via
+  keytar). Evita exposição se o arquivo for copiado inadvertidamente.
+
+· brainiac_crash.log commitado no git
+  Pode expor caminhos, erros e detalhes do sistema em repositório.
+  Deve ser adicionado ao .gitignore imediatamente.
+
+AÇÕES PRIORITÁRIAS
+✅ Adicionar brainiac_crash.log ao .gitignore (ação imediata)
+○ Migrar armazenamento de chaves API para keychain do OS via keytar
+○ Adicionar token de autenticação local para a API quando houver
+  modo servidor institucional (fase 4)
+
+─────────────────────────────────────────
+5. ESTRATEGISTA DE NEGÓCIO
+─────────────────────────────────────────
+
+SÓLIDO
+· Momento certo: onda PKM ainda crescendo, NotebookLM validou mercado
+· Obsidian validou que usuários pagam por ferramentas de conhecimento local
+· Diferencial real e defensável: YouTube nativo + local + gratuito
+· Tração validada: AUVP comprou a ideia antes do produto existir
+
+PREOCUPA
+· Sem sistema de licença = sem receita
+· Sem telemetria = sem dados para iterar
+· Sem landing page = sem pipeline de aquisição
+  Os três precisam existir em paralelo, não sequencialmente.
+
+· Risco de timing
+  O produto está pronto para v1.0. O mercado está aberto agora.
+  Cada semana adicional de desenvolvimento sem venda é risco de
+  perder a janela de first-mover advantage no segmento criadores BR.
+
+AÇÕES PRIORITÁRIAS (ordem de impacto)
+1. Primeira venda B2B formal (zero código necessário)
+   → Demo com criador educacional, contrato simples, nota fiscal
+2. Landing page mínima com proposta de valor e formulário de contato
+3. Sistema de licença Lemon Squeezy (após primeira venda validar preço)
+4. Telemetria Posthog opt-in (após distribuição)
+
+─────────────────────────────────────────
+6. ENGENHEIRO DE CONFIABILIDADE (SRE)
+─────────────────────────────────────────
+
+SÓLIDO
+· Auto-update do yt-dlp via GitHub API no startup
+· Migração automática cerebro_txt → cerebro/youtube
+· Loading screen com feedback em tempo real durante setup
+· Electron gerencia lifecycle do backend e Ollama
+
+PREOCUPA
+· Nenhum mecanismo de recovery para agent_index/ corrompido
+  Se o índice corromper, o usuário perde o chat sem mensagem clara.
+  Falta: detecção de corrupção + botão "Recriar índice" na UI.
+
+· Nenhum backup automático da base de conhecimento
+  Se o usuário apagar cerebro/ acidentalmente, perde tudo.
+  Um export periódico (.zip da pasta cerebro/) seria diferencial de
+  confiança — especialmente para o pitch institucional.
+
+· Sem monitoramento de saúde dos processos
+  Se o Ollama travar silenciosamente, o chat simplesmente não responde.
+  O usuário não recebe feedback claro de "Ollama offline".
+
+AÇÕES PRIORITÁRIAS
+○ Adicionar detecção de índice corrompido + recovery automático
+○ Botão "Exportar base" na aba Repositório (zip de cerebro/)
+○ Indicador de saúde do Ollama mais visível no painel do agente
+○ brainiac_crash.log no .gitignore (compartilhado com pilar de segurança)
+
+─────────────────────────────────────────
+MATRIZ DE PRIORIDADES CONSOLIDADA
+─────────────────────────────────────────
+
+IMEDIATO (zero ou baixo esforço, alto impacto)
+✅ Adicionar brainiac_crash.log ao .gitignore
+○ Tooltip no toggle Busca Ampla no chat
+○ Badge "base desatualizada" na aba Configurar Agente
+
+CURTO PRAZO (sprint de produto)
+○ Primeira venda B2B formal (nenhum código)
+○ Landing page mínima
+○ Telemetria Posthog opt-in
+○ Botão "Exportar base" no Repositório
+○ Onboarding contextual por aba (tooltips, não modal)
+
+MÉDIO PRAZO (evolução de produto)
+○ Sistema de licença Lemon Squeezy
+○ Testes automatizados nos endpoints críticos
+○ Migrar chaves API para keychain do OS
+○ Recovery automático de índice corrompido
+○ Busca web (Brave Search API)
+
+LONGO PRAZO (escala)
+○ Context API / Zustand para estado global
+○ Separação de routers no backend
+○ Suporte mobile completo
+○ Modo servidor institucional com autenticação
+
+─────────────────────────────────────────
+NOTAS DE EVOLUÇÃO
+─────────────────────────────────────────
+
+[Junho 2026 — v0.4.1]
+· Latência do chat reduzida: query expansion desabilitada para Ollama
+· Chunks reduzidos de 6→4 para Ollama (contexto menor = resposta mais rápida)
+· Avaliação estratégica inicial registrada neste documento
