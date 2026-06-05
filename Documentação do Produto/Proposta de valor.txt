@@ -2,6 +2,23 @@
 © 2026 CriAugu — Atualizado: Junho 2026
 
 ─────────────────────────────────────────
+O QUE É PKM (CONTEXTO DE MERCADO)
+─────────────────────────────────────────
+
+PKM = Personal Knowledge Management (Gestão de Conhecimento Pessoal).
+
+É a prática de capturar, organizar e recuperar o conhecimento que você
+coleta ao longo do tempo: vídeos, artigos, documentos, anotações.
+
+O problema central: você salva muito, mas não acessa quando precisa.
+A busca é ruim. Você não lembra onde está. Acaba relendo tudo do zero.
+
+O BrainIAc resolve isso. Em vez de procurar, você pergunta.
+
+Mercado validado por Notion, Obsidian, Roam Research, NotebookLM.
+Nenhum deles combina YouTube nativo + roda local + custo zero.
+
+─────────────────────────────────────────
 POSICIONAMENTO CENTRAL
 ─────────────────────────────────────────
 

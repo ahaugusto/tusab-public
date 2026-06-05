@@ -2,6 +2,25 @@ BRAINIAC ENGINE — PRÓXIMOS PASSOS
 © 2026 CriAugu — Atualizado: Junho 2026
 
 ─────────────────────────────────────────
+O QUE É PKM
+─────────────────────────────────────────
+
+PKM (Personal Knowledge Management — Gestão de Conhecimento Pessoal) é o
+conjunto de práticas e ferramentas que uma pessoa usa para capturar,
+organizar e recuperar o conhecimento que coleta ao longo do tempo:
+anotações, vídeos, artigos, documentos, transcrições.
+
+O problema central do PKM: você salva muito, mas não acessa quando precisa.
+A busca é ruim, você não lembra onde está, acaba relendo tudo do zero.
+
+O BrainIAc resolve isso: em vez de procurar, você pergunta.
+A base é o conhecimento que você escolheu — não a internet inteira —
+então a resposta vem com citação verificável da fonte original.
+
+Mercado validado por: Notion, Obsidian, Roam Research, NotebookLM.
+Nenhum deles tem YouTube nativo + roda local + custo zero.
+
+─────────────────────────────────────────
 ONDE ESTAMOS (v0.4.0)
 ─────────────────────────────────────────
 
@@ -72,25 +91,23 @@ PRÓXIMO SPRINT — PRODUTO
       → Resultado: snippets da web + chunks BM25 no mesmo contexto
       → Interface: campo para key Brave nas configurações do agente
 
-#2  Imagens na base (v2)
-    → OCR com Tesseract ou visão com LLaVA via Ollama
-    → Abre: fotos de slides, capturas de tela, infográficos
-    → Estimativa: médio esforço
+#2  Modelos Ollama configuráveis pelo usuário (subiu da Fase 3)
+    → Seletor de modelo na aba Configurar Agente
+    → Ollama lista modelos instalados via /api/tags
+    → Padrão: llama3.2:1b (leve, funciona em 4GB RAM)
+    → Opção avançada: gemma3:12b (melhor qualidade, requer 8GB RAM)
+    → Ver seção "Ecossistema local" abaixo para contexto
 
-#2  Sistema de licença (Lemon Squeezy)
+#3  Imagens na base
+    → Caminho A (curto prazo): Gemma 4 12B via Ollama já processa imagens
+      nativamente — sem pipeline separado, basta o usuário ter o modelo
+    → Caminho B (fallback): OCR com Tesseract para usuários sem GPU
+    → Abre: fotos de slides, capturas de tela, infográficos
+
+#4  Sistema de licença (Lemon Squeezy)
     → Tela de ativação no Electron
     → Validação HTTP simples
     → Pré-requisito: ter tração com vendas antes de implementar
-
-#3  Telemetria opt-in (Posthog)
-    → Modal de consentimento na primeira abertura
-    → Eventos: fontes adicionadas, perguntas feitas, erros críticos
-    → Necessário para iterar com dados reais
-
-#4  Onboarding interativo
-    → Guia passo a passo na primeira vez em cada aba
-    → Tooltips contextuais nas funcionalidades novas
-    → Reduz churn de usuários que não entendem o produto
 
 #5  Servidor MCP
     → Expõe a base RAG como ferramenta para agentes externos
@@ -113,7 +130,8 @@ Fase 2 — próxima
 Fase 3 — médio prazo
   Servidor MCP para integração com agentes externos
   Atualização automática da base (novos vídeos do canal)
-  Modelos Ollama configuráveis pelo usuário
+  Whisper como fallback para vídeos sem legenda
+  (Gemma 4 12B tem ASR nativo — pode simplificar ou eliminar essa dependência)
 
 Fase 4 — longo prazo
   Modo institucional (servidor interno, múltiplos usuários)
@@ -132,6 +150,42 @@ O diferencial que nenhum deles tem:
   · YouTube como fonte nativa com extração automática
   · Custo zero para uso básico
   · Privacidade total — dados do usuário são do usuário
+
+─────────────────────────────────────────
+ECOSSISTEMA LOCAL — VALIDAÇÃO EXTERNA
+─────────────────────────────────────────
+
+Em Junho 2026, o Google lançou o Gemma 4 12B:
+· Modelo multimodal (texto + imagem + áudio)
+· 256K tokens de contexto
+· Roda em 8GB de RAM via Ollama
+· Apache-2.0 — livre para uso comercial
+
+Convergências diretas com o BrainIAc:
+
+1. Valida a aposta local-first
+   O maior player em IA está construindo na mesma direção.
+   Privacidade + autonomia offline está se tornando padrão de mercado,
+   não nicho técnico.
+
+2. Roda via Ollama — nosso provedor padrão
+   Usuários com Gemma 4 instalado já usam via BrainIAc sem alteração.
+   O seletor de modelos (item #2 do próximo sprint) libera isso.
+
+3. 256K de contexto muda a equação do RAG
+   O BM25 existe porque contextos de 4K–8K exigiam seleção de chunks.
+   Com 256K, bases pequenas-médias cabem inteiras no contexto.
+   Oportunidade: modo "full context" para usuários com base < 50 arquivos.
+   O BM25 continua relevante para bases grandes (100+ vídeos extraídos).
+
+4. Multimodal simplifica o roadmap
+   Imagens e áudio (Fases 2–3) podem usar Gemma 4 diretamente,
+   sem construir pipelines separados de OCR ou ASR.
+
+O que não muda: o BrainIAc não é o modelo.
+É a infraestrutura de conhecimento. Gemma 4 é um motor melhor
+que podemos usar. Nossa proposta de valor — extrair YouTube,
+indexar documentos, citar fontes — é o que o modelo por si só não faz.
 
 ─────────────────────────────────────────
 PRINCÍPIO QUE NÃO MUDA

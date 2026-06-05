@@ -232,6 +232,47 @@ LONGO PRAZO (escala)
 ○ Modo servidor institucional com autenticação
 
 ─────────────────────────────────────────
+VALIDAÇÃO PELO ECOSSISTEMA
+─────────────────────────────────────────
+
+[Junho 2026] Google lança Gemma 4 12B via Ollama
+
+Relevância estratégica: o maior player em IA está construindo na direção
+local-first — mesma filosofia do BrainIAc. Isso não é coincidência,
+é validação de mercado.
+
+Impacto por pilar:
+
+ARQUITETO
+· 256K tokens de contexto abre modo "full context" para bases pequenas
+  (< 50 arquivos), sem necessidade de seleção BM25
+· BM25 permanece essencial para bases grandes (100+ vídeos extraídos)
+· Gemma 4 multimodal (imagem + áudio) pode substituir pipelines separados
+  de OCR e Whisper, reduzindo débito técnico futuro
+
+PRODUCT MANAGER
+· Seletor de modelo Ollama (estava na Fase 3) sobe para próximo sprint
+  — usuários com Gemma 4 já instalam pelo próprio fluxo do Ollama,
+  mas o BrainIAc precisa listar e permitir selecionar
+· Requisito de hardware aumenta: Gemma 4 12B exige 8GB RAM
+  — llama3.2:1b deve continuar como padrão, Gemma 4 como opção avançada
+
+ESTRATEGISTA
+· A janela de timing identificada como risco continua se abrindo
+  O ecossistema local está amadurecendo rapidamente
+  Criadores ainda não têm PKM que aproveite isso — momento de ir ao mercado
+· Risco de commoditização: modelos melhores ficam cada vez mais acessíveis
+  O diferencial defensável do BrainIAc não é o modelo — é a camada
+  de extração (YouTube nativo), indexação e citação de fontes
+
+CONCLUSÃO
+O BrainIAc não compete com o Gemma 4. São camadas diferentes:
+  Gemma 4 → motor de linguagem
+  BrainIAc → infraestrutura de conhecimento pessoal
+
+Quanto melhor o motor, mais valioso fica o BrainIAc como camada de cima.
+
+─────────────────────────────────────────
 NOTAS DE EVOLUÇÃO
 ─────────────────────────────────────────
 
@@ -251,3 +292,10 @@ NOTAS DE EVOLUÇÃO
 · Toggle busca ampla/restrita no chat com prompt diferente por modo
 · Latência do Ollama reduzida: sem query expansion, 4 chunks (era 6)
 · Base de ajuda embutida: 13.671 chars de documentação no cerebro/textos/
+
+[Junho 2026 — análise de ecossistema]
+· Google lança Gemma 4 12B via Ollama: valida local-first como filosofia
+· Seletor de modelos Ollama sobe da Fase 3 para próximo sprint
+· Roadmap de imagens/áudio simplificado: Gemma 4 processa nativamente
+· Conclusão estratégica: quanto melhor o ecossistema local, mais
+  valioso o BrainIAc como camada de infraestrutura de conhecimento
