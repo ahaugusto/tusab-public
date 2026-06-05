@@ -68,16 +68,14 @@ DIFERENCIAIS REAIS
 POSIÇÃO NO MERCADO
 ─────────────────────────────────────────
 
-BrainIAc NÃO compete com ChatGPT, Gemini ou Claude.
+BrainIAc NÃO compete com assistentes de IA generativa.
 São produtos diferentes com jobs to be done diferentes:
 
-  ChatGPT  → "me explique qualquer coisa do mundo"
+  IA generativa → "me explique qualquer coisa do mundo"
   BrainIAc → "me ajude a acessar o conhecimento que eu já coletei"
 
 Não são substitutos — são complementares.
-O usuário do BrainIAc provavelmente usa ChatGPT também, para coisas
-diferentes. Posicionar contra o ChatGPT seria inaccurado e uma batalha
-que não faz sentido travar.
+O usuário do BrainIAc provavelmente usa algum LLM generativo também, para coisas diferentes. Posicionar contra IA generativa seria inaccurado e uma batalha que não faz sentido travar.
 
 BrainIAc compete (e se diferencia) de sistemas PKM com IA:
 NotebookLM, Notion AI, Obsidian AI, Mem, Roam Research AI.
@@ -126,4 +124,5 @@ Roda na sua máquina, funciona offline, zero custo com Ollama.
 Para criadores, vira um assistente com a própria voz.
 Para instituições, transforma qualquer acervo em infraestrutura
 consultável. A AUVP já validou o modelo. Agora escalamos."
+
 
