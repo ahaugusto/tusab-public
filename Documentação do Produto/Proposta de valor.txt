@@ -1,4 +1,4 @@
-PROPOSTA DE VALOR — BrainIAc
+﻿PROPOSTA DE VALOR — BrainIAc
 © 2026 CriAugu — Atualizado: Junho 2026
 
 ─────────────────────────────────────────
@@ -68,15 +68,44 @@ DIFERENCIAIS REAIS
 POSIÇÃO NO MERCADO
 ─────────────────────────────────────────
 
-Antes do v0.4.0, BrainIAc competia com ferramentas de YouTube.
-Agora compete com sistemas de gestão de conhecimento pessoal (PKM):
+BrainIAc NÃO compete com ChatGPT, Gemini ou Claude.
+São produtos diferentes com jobs to be done diferentes:
+
+  ChatGPT  → "me explique qualquer coisa do mundo"
+  BrainIAc → "me ajude a acessar o conhecimento que eu já coletei"
+
+Não são substitutos — são complementares.
+O usuário do BrainIAc provavelmente usa ChatGPT também, para coisas
+diferentes. Posicionar contra o ChatGPT seria inaccurado e uma batalha
+que não faz sentido travar.
+
+BrainIAc compete (e se diferencia) de sistemas PKM com IA:
 NotebookLM, Notion AI, Obsidian AI, Mem, Roam Research AI.
 
 O diferencial que nenhum deles tem:
 · Roda local, sem servidor, sem assinatura obrigatória
-· Privacidade total — dados ficam na máquina do usuário
-· Custo zero para uso básico (Ollama + Groq free tier)
 · YouTube como fonte nativa com extração automática
+· Custo zero para uso básico (Ollama + Groq free tier)
+· Privacidade total — dados ficam na máquina do usuário
+
+─────────────────────────────────────────
+ARQUITETURA NARRATIVA
+─────────────────────────────────────────
+
+Linha de frente (gatilho de atenção):
+  "Seu conhecimento, consultável. Sem perder tempo."
+  Resolve a dor imediata: conteúdo demais, tempo de menos.
+
+Segunda camada (construção de confiança):
+  "Só responde com o que você escolheu.
+   Cita sempre a fonte. Você verifica."
+  Diferencia de IA genérica sem precisar atacar ninguém.
+
+Braço estratégico (para B2B e perfis avançados):
+  "Num mundo de conteúdo sem autoria, BrainIAc é
+   o assistente que você pode auditar."
+  Argumento de governança para instituições. Não é linha de frente.
+
 
 ─────────────────────────────────────────
 VALIDAÇÃO
@@ -97,3 +126,4 @@ Roda na sua máquina, funciona offline, zero custo com Ollama.
 Para criadores, vira um assistente com a própria voz.
 Para instituições, transforma qualquer acervo em infraestrutura
 consultável. A AUVP já validou o modelo. Agora escalamos."
+
