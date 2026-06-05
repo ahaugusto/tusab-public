@@ -43,7 +43,17 @@ SPRINT IMEDIATO — DISTRIBUIÇÃO
 PRÓXIMO SPRINT — PRODUTO
 ─────────────────────────────────────────
 
-#1  Imagens na base (v2)
+#1  Busca web no chat (v2)
+    Dois modos além do Restrito atual:
+    · Amplo (Opção A — implementar logo): base como referência + LLM complementa
+      com conhecimento de treinamento. Sem dependência externa, funciona offline.
+    · Web (Opção B — médio prazo): integração com Brave Search API
+      → 2.000 buscas/mês gratuitas, API key do usuário (console.api.search.brave.com)
+      → DuckDuckGo como fallback sem key (parser HTML, frágil)
+      → Resultado: snippets da web + chunks BM25 no mesmo contexto
+      → Interface: campo para key Brave nas configurações do agente
+
+#2  Imagens na base (v2)
     → OCR com Tesseract ou visão com LLaVA via Ollama
     → Abre: fotos de slides, capturas de tela, infográficos
     → Estimativa: médio esforço
