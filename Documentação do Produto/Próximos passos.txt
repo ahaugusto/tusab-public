@@ -19,25 +19,44 @@ sistema de gestão de conhecimento pessoal multi-fonte:
 • 4 abas: Extração · Repositório · Relatório · Configurar Agente
 
 ─────────────────────────────────────────
-SPRINT IMEDIATO — DISTRIBUIÇÃO
+SPRINT IMEDIATO — PRODUTO (em execução)
 ─────────────────────────────────────────
 
-1. Publicar OAuth no Google Cloud Console
+✅ Badge "base desatualizada" na aba Configurar Agente
+✅ Tooltip no toggle Busca Ampla/Restrita do chat
+✅ brainiac_crash.log no .gitignore
+
+○ Botão "Exportar base" no Repositório (.zip de cerebro/)
+○ Onboarding contextual por aba (tooltips, não modal)
+○ Telemetria Posthog opt-in (modal de consentimento)
+
+─────────────────────────────────────────
+QUANDO O PRODUTO ESTIVER PRONTO PARA LANÇAR
+─────────────────────────────────────────
+
+Estes itens ficam para quando a decisão de ir ao mercado for tomada:
+
+A. Publicar OAuth no Google Cloud Console
    → Testing → Production (privacy policy e TOS prontos)
    → Desbloquia Drive para qualquer usuário Google
 
-2. Registro INPI
+B. Registro INPI
    → inpi.gov.br > Programa de Computador (~R$90)
    → Titularidade: CriAugu CNPJ 65.131.075/0001-57
 
-3. Gerar primeiro instalador oficial
+C. Gerar primeiro instalador oficial
    → setup-env.ps1 → npm run build web_interface → npm run build electron
    → Publicar no GitHub Releases para auto-update
 
-4. Primeira venda B2B
+D. Landing page mínima
+   → Proposta de valor clara, vídeo demo, formulário de contato
+   → Gumroad ou Lemon Squeezy como checkout
+   → Sem essa página, não há pipeline de aquisição
+
+E. Primeira venda B2B formal
    → Demo com criador educacional (50k–500k inscritos)
    → Case da AUVP como referência
-   → Mostrar base multi-fonte: canal + documentos do criador
+   → Contrato simples, nota fiscal, feedback documentado
 
 ─────────────────────────────────────────
 PRÓXIMO SPRINT — PRODUTO

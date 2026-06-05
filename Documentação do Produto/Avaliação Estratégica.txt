@@ -209,11 +209,14 @@ IMEDIATO (zero ou baixo esforço, alto impacto)
 ✅ Badge "base desatualizada" na aba Configurar Agente
 
 CURTO PRAZO (sprint de produto)
-○ Primeira venda B2B formal (nenhum código)
-○ Landing page mínima
 ○ Telemetria Posthog opt-in
 ○ Botão "Exportar base" no Repositório
 ○ Onboarding contextual por aba (tooltips, não modal)
+
+QUANDO PRONTO PARA LANÇAR (decisão pendente)
+→ Ver "Documentação do Produto/Próximos passos.txt"
+○ Landing page mínima
+○ Primeira venda B2B formal
 
 MÉDIO PRAZO (evolução de produto)
 ○ Sistema de licença Lemon Squeezy
