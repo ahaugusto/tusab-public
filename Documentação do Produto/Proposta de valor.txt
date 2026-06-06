@@ -104,6 +104,52 @@ O diferencial que nenhum deles tem:
 · Privacidade total — dados ficam na máquina do usuário
 
 ─────────────────────────────────────────
+ANÁLISE FRENTE AO NOTEBOOKLM
+─────────────────────────────────────────
+
+O NotebookLM (Google) é o concorrente mais próximo em conceito:
+aceita PDFs, Google Docs, YouTube e texto, responde citando a fonte.
+É um produto polido, com Gemini 1.5 Pro como motor, atualmente gratuito.
+
+O que fazemos igual:
+· Chat sobre documentos com citação de fonte
+· Múltiplos tipos de entrada (PDF, texto, YouTube)
+· Interface focada em perguntas e respostas
+
+Onde o NotebookLM é melhor:
+· Motor de IA superior (Gemini 1.5 Pro vs. llama3.2:1b padrão)
+· UI mais polida (produto Google)
+· Audio Overview — resumo em formato podcast
+· Gratuito sem configuração
+
+Onde o BrainIAc se diferencia de verdade:
+
+1. Escala de extração do YouTube
+   NotebookLM aceita vídeos individuais.
+   BrainIAc extrai canais inteiros — centenas de vídeos — automaticamente.
+   Não é uma feature diferente. É uma magnitude diferente.
+
+2. Local-first — dados nunca saem da máquina
+   NotebookLM processa nos servidores do Google.
+   Para uso institucional (documentos internos, atas, dados sensíveis),
+   isso é bloqueador. Para o BrainIAc, é o design padrão.
+
+3. Sem dependência de conta Google ou nuvem
+   Funciona offline com Ollama.
+   Sem risco de descontinuação ou mudança de política de privacidade.
+
+Conclusão de posicionamento:
+A diferenciação real do BrainIAc não é "chat com documentos" —
+o NotebookLM já faz isso bem. É:
+
+  Extração de canais YouTube em escala
+  + processamento 100% local
+  para quem não pode ou não quer mandar dados para nuvem.
+
+O NotebookLM valida o mercado. O BrainIAc ocupa o nicho que o
+NotebookLM deliberadamente não quer: local, privado, sem Google.
+
+─────────────────────────────────────────
 ARQUITETURA NARRATIVA
 ─────────────────────────────────────────
 
