@@ -99,12 +99,10 @@ PRÓXIMO SPRINT — PRODUTO
       → Resultado: snippets da web + chunks BM25 no mesmo contexto
       → Interface: campo para key Brave nas configurações do agente
 
-#2  Modelos Ollama configuráveis pelo usuário (subiu da Fase 3)
-    → Seletor de modelo na aba Configurar Agente
-    → Ollama lista modelos instalados via /api/tags
-    → Padrão: llama3.2:1b (leve, funciona em 4GB RAM)
-    → Opção avançada: gemma3:12b (melhor qualidade, requer 8GB RAM)
-    → Ver seção "Ecossistema local" abaixo para contexto
+✅ Modelos Ollama configuráveis pelo usuário (v0.4.3)
+    Painel "Configurações Avançadas" colapsável em Configurar Agente.
+    Lista modelos instalados, seleção persiste no config.
+    Para Gemma 4: ollama pull gemma3:12b → selecionar no dropdown.
 
 #3  Imagens na base
     → Caminho A (curto prazo): Gemma 4 12B via Ollama já processa imagens

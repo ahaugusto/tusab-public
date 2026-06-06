@@ -231,6 +231,7 @@ MÉDIO PRAZO (evolução de produto)
 ○ Migrar chaves API para keychain do OS
 ○ Recovery automático de índice corrompido
 ○ Busca web (Brave Search API)
+○ Imagens na base (Gemma 4 multimodal / OCR fallback)
 
 LONGO PRAZO (escala)
 ○ Context API / Zustand para estado global
