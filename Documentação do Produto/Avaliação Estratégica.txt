@@ -202,7 +202,7 @@ PREOCUPA
 
 AÇÕES PRIORITÁRIAS
 ○ Adicionar detecção de índice corrompido + recovery automático
-○ Botão "Exportar base" na aba Repositório (zip de cerebro/)
+~~Botão "Exportar base"~~ — descartado (Drive já cobre)
 ○ Indicador de saúde do Ollama mais visível no painel do agente
 ○ brainiac_crash.log no .gitignore (compartilhado com pilar de segurança)
 
@@ -218,7 +218,7 @@ IMEDIATO (zero ou baixo esforço, alto impacto)
 CURTO PRAZO (sprint de produto)
 ✅ Telemetria Posthog opt-in (ConsentModal + analytics.js)
 ✅ Onboarding contextual — ProgressToast + hints por aba
-○ Botão "Exportar base" no Repositório (.zip de cerebro/)
+~~Botão "Exportar base"~~ — descartado (Drive já cobre backup e compartilhamento)
 
 QUANDO PRONTO PARA LANÇAR (decisão pendente)
 → Ver "Documentação do Produto/Próximos passos.txt"

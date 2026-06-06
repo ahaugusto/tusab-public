@@ -53,7 +53,9 @@ SPRINT IMEDIATO — PRODUTO (em execução)
 ✅ Telemetria Posthog opt-in (ConsentModal + analytics.js)
 ✅ Onboarding contextual (ProgressToast + hints por aba)
 
-○ Botão "Exportar base" no Repositório (.zip de cerebro/)
+✅ Botão "Exportar base" — descartado
+   Redundante: pasta cerebro/ já é local (acesso direto) e o Drive
+   já cobre o compartilhamento com outros usuários. Sem valor adicional.
 
 ─────────────────────────────────────────
 QUANDO O PRODUTO ESTIVER PRONTO PARA LANÇAR
