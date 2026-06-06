@@ -2,7 +2,7 @@
 © 2026 CriAugu — Atualizado: Junho 2026
 
 ─────────────────────────────────────────
-O QUE É PKM (CONTEXTO DE MERCADO)
+CATEGORIA DE MERCADO: PKM
 ─────────────────────────────────────────
 
 PKM = Personal Knowledge Management (Gestão de Conhecimento Pessoal).
@@ -13,23 +13,25 @@ coleta ao longo do tempo: vídeos, artigos, documentos, anotações.
 O problema central: você salva muito, mas não acessa quando precisa.
 A busca é ruim. Você não lembra onde está. Acaba relendo tudo do zero.
 
-O BrainIAc resolve isso. Em vez de procurar, você pergunta.
-
-Mercado validado por Notion, Obsidian, Roam Research, NotebookLM.
-Nenhum deles combina YouTube nativo + roda local + custo zero.
+PKM é a categoria técnica. É como o mercado classifica esse segmento.
+Concorrentes que vivem nessa categoria: Notion, Obsidian, NotebookLM.
 
 ─────────────────────────────────────────
 POSICIONAMENTO CENTRAL
 ─────────────────────────────────────────
 
-BrainIAc é o seu cérebro digital.
-Agrega qualquer conhecimento que você coleta —
-vídeos, documentos, anotações — e responde suas perguntas
-com a fonte exata de onde veio cada informação.
+BrainIAc é o seu mentor digital.
 
-Não é uma IA genérica.
-É o conhecimento que você escolheu, organizado do seu jeito,
-respondendo quando você precisar.
+Não é uma busca. Não é um chatbot genérico.
+É um mentor que conhece exatamente o que você escolheu aprender —
+e responde com a voz, a didática e a fonte de quem você já confia.
+
+A diferença entre buscar e perguntar para um mentor:
+  Busca → você filtra, compara, decide o que é relevante
+  Mentor → ele já sabe o que é relevante para você, e explica
+
+O mentor do BrainIAc só sabe o que você ensinou a ele.
+Isso não é limitação — é a garantia de que ele não inventa.
 
 ─────────────────────────────────────────
 O QUE ENTRA NO CÉREBRO
@@ -51,22 +53,23 @@ PARA CADA PERFIL
 Para o ALUNO:
 "Combine o canal do seu professor com suas próprias anotações
  e as apostilas do curso. Pergunte sobre qualquer tema
- e receba a resposta na linguagem e didática de quem você já confia."
+ e receba a resposta na linguagem e didática de quem você já confia.
+ É como ter o professor disponível a qualquer hora."
 
 Para o PROFISSIONAL:
 "Seus relatórios, apresentações e artigos de referência
  em um único lugar consultável. Sem buscar em pastas,
- sem reler tudo — só perguntar."
+ sem reler tudo — só perguntar ao mentor que conhece seu contexto."
 
 Para o CRIADOR:
 "Seu canal tem anos de conhecimento acumulado.
  Seus inscritos não conseguem acessar tudo.
  Adicione seus roteiros, materiais e pesquisas.
- Transforme tudo isso em um assistente com a sua voz."
+ Transforme tudo isso em um mentor com a sua voz."
 
 Para a INSTITUIÇÃO:
 "Lives, webinars, documentos internos, atas de reunião.
- Tudo o que foi produzido, agora consultável como um arquivo vivo.
+ Tudo o que foi produzido, agora consultável como um mentor vivo.
  Sem depender de servidor externo. Dados ficam na sua rede."
 
 ─────────────────────────────────────────
@@ -180,11 +183,11 @@ O próximo passo é a primeira venda B2B como plataforma.
 PITCH DE UM PARÁGRAFO
 ─────────────────────────────────────────
 
-"BrainIAc é o seu cérebro digital. Você extrai canais do YouTube,
-adiciona seus PDFs, documentos e anotações — tudo vai para uma base
-de conhecimento que responde suas perguntas citando a fonte exata.
+"BrainIAc é o seu mentor digital. Você extrai canais do YouTube,
+adiciona seus PDFs, documentos e anotações — tudo vira um mentor
+que responde suas perguntas citando a fonte exata de onde veio.
 Roda na sua máquina, funciona offline, zero custo com Ollama.
-Para criadores, vira um assistente com a própria voz.
+Para criadores, vira um mentor com a própria voz.
 Para instituições, transforma qualquer acervo em infraestrutura
 consultável. A AUVP já validou o modelo. Agora escalamos."
 

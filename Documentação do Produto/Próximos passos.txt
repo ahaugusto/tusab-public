@@ -2,23 +2,29 @@ BRAINIAC ENGINE — PRÓXIMOS PASSOS
 © 2026 CriAugu — Atualizado: Junho 2026
 
 ─────────────────────────────────────────
-O QUE É PKM
+CATEGORIA E CONCEITO
 ─────────────────────────────────────────
 
-PKM (Personal Knowledge Management — Gestão de Conhecimento Pessoal) é o
-conjunto de práticas e ferramentas que uma pessoa usa para capturar,
-organizar e recuperar o conhecimento que coleta ao longo do tempo:
-anotações, vídeos, artigos, documentos, transcrições.
+Categoria de mercado: PKM (Personal Knowledge Management)
+Conceito de produto: Mentor Digital
 
-O problema central do PKM: você salva muito, mas não acessa quando precisa.
-A busca é ruim, você não lembra onde está, acaba relendo tudo do zero.
+PKM é como o mercado técnico classifica o segmento.
+Concorrentes vivem nessa categoria: Notion, Obsidian, NotebookLM.
 
-O BrainIAc resolve isso: em vez de procurar, você pergunta.
-A base é o conhecimento que você escolheu — não a internet inteira —
-então a resposta vem com citação verificável da fonte original.
+Mentor digital é como o usuário experimenta o produto.
 
-Mercado validado por: Notion, Obsidian, Roam Research, NotebookLM.
-Nenhum deles tem YouTube nativo + roda local + custo zero.
+A distinção:
+  PKM genérico → ferramenta de organização (você ainda precisa procurar)
+  Mentor digital → interlocutor ativo (você pergunta, ele responde)
+
+O problema central que resolve: você salva muito, mas não acessa quando
+precisa. A busca é ruim. Você não lembra onde está. Acaba relendo tudo.
+
+O BrainIAc resolve isso: em vez de procurar, você consulta um mentor
+que conhece exatamente o conteúdo que você escolheu — e só esse.
+Resposta sempre com citação verificável da fonte original.
+
+Nenhum concorrente combina: YouTube em escala + local + custo zero.
 
 ─────────────────────────────────────────
 ONDE ESTAMOS (v0.4.0)
@@ -130,13 +136,22 @@ Fase 2 — próxima
 Fase 3 — médio prazo
   Servidor MCP para integração com agentes externos
   Atualização automática da base (novos vídeos do canal)
+  Entrada por voz no chat (AI Edge Eloquent como referência)
+    → Google lançou ditado e edição de voz 100% offline
+    → Caso de uso: usuário pergunta ao mentor por voz, sem digitar
+    → Requer investigar API/integração quando documentação estiver disponível
   Whisper como fallback para vídeos sem legenda
-  (Gemma 4 12B tem ASR nativo — pode simplificar ou eliminar essa dependência)
+    → Gemma 4 12B tem ASR nativo — pode simplificar ou eliminar essa dependência
 
 Fase 4 — longo prazo
   Modo institucional (servidor interno, múltiplos usuários)
   API pública para integrações
   Fontes além do YouTube: podcasts RSS, páginas web, código
+  LiteRT-LM CLI como provider adicional
+    → Google lançou endpoint local compatível com Open WebUI/Aider
+    → Se usar formato OpenAI-compatible, adicionar como terceiro provider
+      ao lado do Ollama (mesma lógica, endpoint diferente)
+    → Aguardar documentação pública da API antes de implementar
 
 ─────────────────────────────────────────
 MUDANÇA DE PERSPECTIVA (v0.4.0)

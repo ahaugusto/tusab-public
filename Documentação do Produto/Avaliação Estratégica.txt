@@ -12,6 +12,13 @@ O produto está tecnicamente maduro para v1.0.
 O gargalo agora não é técnico — é de go-to-market.
 Cada semana sem a primeira venda é uma semana de validação desperdiçada.
 
+Categoria de mercado: PKM (Personal Knowledge Management)
+Conceito de produto: Mentor Digital
+
+PKM descreve o que o produto faz tecnicamente.
+Mentor digital descreve o que o usuário experimenta.
+A distinção importa na comunicação: PKM é jargão, mentor é imediato.
+
 ─────────────────────────────────────────
 1. ARQUITETO DE SOFTWARE
 ─────────────────────────────────────────
