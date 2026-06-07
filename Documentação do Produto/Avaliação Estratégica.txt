@@ -280,6 +280,18 @@ O BrainIAc não compete com o Gemma 4. São camadas diferentes:
 
 Quanto melhor o motor, mais valioso fica o BrainIAc como camada de cima.
 
+O Google está validando a filosofia, não competindo com o produto.
+Cada avanço do ecossistema local — Gemma 4, LiteRT-LM, Ollama melhorando —
+aumenta o teto do BrainIAc, não diminui.
+
+Por quê? Porque o usuário final não vai configurar Ollama, baixar o Gemma 4
+e montar um pipeline de RAG. Ele vai abrir o BrainIAc, colar o link do canal
+e perguntar. O trabalho técnico invisível é exatamente o que o BrainIAc resolve.
+
+O NotebookLM faz algo parecido mas deliberadamente não quer o nicho local/privado
+— é um produto Google, sempre dependerá dos servidores do Google.
+Esse espaço fica aberto. O BrainIAc ocupa.
+
 ─────────────────────────────────────────
 NOTAS DE EVOLUÇÃO
 ─────────────────────────────────────────

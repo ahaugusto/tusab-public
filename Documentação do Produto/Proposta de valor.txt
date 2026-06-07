@@ -153,6 +153,27 @@ O NotebookLM valida o mercado. O BrainIAc ocupa o nicho que o
 NotebookLM deliberadamente não quer: local, privado, sem Google.
 
 ─────────────────────────────────────────
+RELAÇÃO COM O ECOSSISTEMA LOCAL (Google, Ollama, Gemma)
+─────────────────────────────────────────
+
+O Google lançar modelos cada vez melhores rodando localmente
+não é uma ameaça ao BrainIAc — é uma validação e um combustível.
+
+O Google entrega o motor. O BrainIAc entrega a camada de conhecimento.
+São complementares, não concorrentes.
+
+  Motor (Gemma 4, Ollama) → processa linguagem
+  BrainIAc → extrai, indexa, cita fontes, entrega interface
+
+Quanto melhor o motor disponível, mais capaz fica o mentor do BrainIAc.
+O usuário não precisa saber que existe um Gemma 4 por baixo.
+Ele só sabe que o mentor ficou mais inteligente.
+
+O NotebookLM (Google) faz algo parecido, mas nunca vai querer
+o nicho local/privado — é um produto de nuvem por design.
+Esse espaço fica estruturalmente aberto. O BrainIAc ocupa.
+
+─────────────────────────────────────────
 ARQUITETURA NARRATIVA
 ─────────────────────────────────────────
 
