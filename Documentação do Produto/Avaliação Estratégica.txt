@@ -176,7 +176,7 @@ AÇÕES PRIORITÁRIAS
 ○ Fix ② yt-dlp playlist validation — motor_brainiac.py (imediato, 5 min)
 ○ Fix ③ Upload size limit — api_brainiac.py (imediato, 5 min)
 ○ Fix ④ Path traversal — api_brainiac.py (imediato, 5 min)
-○ Fix ⑤ dangerouslySetInnerHTML — App.jsx (antes da v1.0)
+✅ Fix ⑤ dangerouslySetInnerHTML — App.jsx
 ○ Fix ⑥ Keychain via keytar — médio prazo
 ○ Fix ⑦ Pydantic field limits — backlog
 
