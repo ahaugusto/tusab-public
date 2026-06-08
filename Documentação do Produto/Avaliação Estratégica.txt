@@ -254,10 +254,10 @@ CURTO PRAZO (sprint de produto)
 ~~Botão "Exportar base"~~ — descartado (Drive já cobre)
 
 SEGURANÇA — PRÉ-LANÇAMENTO (bloqueia distribuição)
-○ Fix ① CORS restrito a localhost
-○ Fix ② Validação de playlist ID no yt-dlp
-○ Fix ③ Limite de tamanho no upload (50 MB)
-○ Fix ④ Path traversal check no delete
+✅ Fix ① CORS restrito a localhost
+✅ Fix ② Validação de playlist ID no yt-dlp
+✅ Fix ③ Limite de tamanho no upload (50 MB)
+✅ Fix ④ Path traversal check no delete
 
 QUANDO PRONTO PARA LANÇAR (decisão pendente)
 → Ver "Documentação do Produto/Próximos passos.txt"
