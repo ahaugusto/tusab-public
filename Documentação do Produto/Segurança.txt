@@ -240,13 +240,14 @@ a superficie de ataque foi eliminada.
 PENDENTES (NÃO BLOQUEIAM LANÇAMENTO)
 ─────────────────────────────────────────
 
-Fix ⑥ — Chaves de API em plaintext (MÉDIO)
+Fix ⑥ — Chaves de API em plaintext (MÉDIO — MITIGADO)
   agent_config.json armazena chaves em texto claro.
-  Para MVP com público técnico: aceitável — o usuário controla
-  o arquivo e ele nunca sai da máquina.
-  Para v1.0 com público amplo: migrar para keychain do OS via
-  Electron keytar (armazenamento criptografado nativo do sistema).
-  Esse item já está mapeado no roadmap de médio prazo.
+  Mitigações implementadas:
+  · LEIA-ME-SEGURANCA.txt criado automaticamente na pasta data/ —
+    explica o que cada subpasta contém e o que não deve ser sincronizado
+  · DriveWarningModal — exibido uma única vez antes do primeiro Drive auth,
+    mostra explicitamente cerebro/ (seguro) vs config/ (sensível)
+  Solução definitiva (v1.0): migrar para keychain do OS via Electron keytar.
 
 Fix ⑦ — Campos Pydantic sem limite de tamanho (BAIXO)
   AgentChatRequest aceita mensagem e historico sem max_length.

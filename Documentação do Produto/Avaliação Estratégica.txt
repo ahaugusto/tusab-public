@@ -177,7 +177,7 @@ AÇÕES PRIORITÁRIAS
 ○ Fix ③ Upload size limit — api_brainiac.py (imediato, 5 min)
 ○ Fix ④ Path traversal — api_brainiac.py (imediato, 5 min)
 ✅ Fix ⑤ dangerouslySetInnerHTML — App.jsx
-○ Fix ⑥ Keychain via keytar — médio prazo
+~ Fix ⑥ Keychain via keytar — mitigado com aviso na pasta + modal Drive
 ○ Fix ⑦ Pydantic field limits — backlog
 
 ─────────────────────────────────────────
