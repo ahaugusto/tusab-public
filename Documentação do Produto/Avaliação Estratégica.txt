@@ -86,35 +86,59 @@ AÇÕES PRIORITÁRIAS
 3. DESIGNER DE PRODUTO (UX)
 ─────────────────────────────────────────
 
-SÓLIDO
+SÓLIDO (auditoria Junho 2026)
 · Home com cards é clara e contextual (badges com dados reais)
 · Chat flutuante é o padrão correto — acessível de qualquer aba
 · Sidebar recolhível resolve o problema de espaço
 · Tema automático via prefers-color-scheme
+· Skip navigation link implementado corretamente (WCAG 2.4.1)
+· role="progressbar" com aria-valuenow/min/max correto
+· role="log" com aria-live="polite" no log em tempo real
+· ProgressToast pós-indexação com CTA direto "Abrir chat"
+· PostExtractionModal com dois caminhos claros (Drive / Agente IA)
 
-PREOCUPA
-· Indexação desatualizada sem indicação visual
-  O usuário não sabe que tem novos vídeos para indexar.
-  Falta: badge "X novos vídeos desde a última indexação"
-  na aba Configurar Agente ou na home.
+ACHADOS — AUDITORIA COMPLETA (Junho 2026)
 
-· Toggle "Restrita/Ampla" sem contexto para usuário novo
-  Está no header do chat sem explicação inline.
-  Um usuário novo não entende o que significa sem ler documentação.
-  Falta: tooltip ou descrição na primeira vez.
+CRÍTICO
+· busca_ampla nunca enviado ao backend (App.jsx ~linha 453)
+  O toggle existe, tem tooltip, muda estado visual — mas o parâmetro
+  nunca chega ao backend. Toda pergunta roda em modo restrito.
+  Fix: adicionar busca_ampla: buscaAmpla no payload do sendChatStream.
 
-· Estado da base pouco transparente
-  Para saber o status da base, o usuário precisa navegar até
-  Configurar Agente. Deveria ser visível na home ou no chat.
+ALTO
+· Estado vazio do chat pode bloquear erroneamente
+  canal_indexado (nome normalizado) comparado com canalConfigurado
+  (pode ser URL completa). Se normalização diverge, chat fica bloqueado
+  mesmo após indexação bem-sucedida.
+· Sidebar recolhida: círculos 1/2/3 são div sem interação nem aria-label
+  O usuário que reduz a sidebar perde navegação completamente.
+· KEYS.chatFirstSend definido em useOnboarding mas nunca usado
+  Jornada pós-indexação não tem guia para a primeira pergunta.
+· Analytics.chatPergunta() definido mas nunca invocado — Time to Value
+  não está sendo medido.
 
-· Mobile inviável para extração
-  Sidebar, log em tempo real e campos de configuração são inutilizáveis
-  em tela pequena. Não é prioridade agora (público usa desktop),
-  mas precisa estar no radar para expansão.
+MÉDIO
+· Ollama offline não comunicado especificamente no chat
+  Erro genérico "Erro ao conectar com servidor" quando Ollama trava.
+· Terminologia inconsistente: "Configurar Agente" / "Agente IA" /
+  "Provedor de IA" — quatro variações para o mesmo conceito.
+· Tooltip do toggle Busca Ampla é hover-only (CSS opacity)
+  Invisível para teclado e leitores de tela. Sem aria-describedby.
+· Mecanismo de revogar consentimento analytics ausente na UI.
+
+BAIXO
+· Footer exibe "Versão 2.0 Web" — deveria ser v0.4.x
+· Badge no FAB do chat conta respostas do assistente como "não lidas"
+· Status "Ocioso" como primeiro estado visível confunde novos usuários
 
 AÇÕES PRIORITÁRIAS
-○ Badge "X novos vídeos para indexar" — indicador de base desatualizada
-○ Tooltip no toggle Busca Ampla/Restrita — explica na primeira vez
+✅ Badge "X novos vídeos para indexar"
+✅ Tooltip no toggle Busca Ampla/Restrita
+○ Fix crítico: busca_ampla no payload (App.jsx)
+○ Groq na UI de provedores
+○ Mensagem específica "Ollama offline" no chat
+○ Corrigir versão no footer
+○ Mecanismo de revogar consentimento nas configurações
 ○ Indicador de estado da base na home card "Configurar Agente"
 
 ─────────────────────────────────────────
@@ -239,6 +263,136 @@ AÇÕES PRIORITÁRIAS
 ○ brainiac_crash.log no .gitignore (compartilhado com pilar de segurança)
 
 ─────────────────────────────────────────
+7. LGPD E PRIVACIDADE
+─────────────────────────────────────────
+
+Revisão realizada em Junho 2026 com foco na Lei Geral de Proteção de Dados
+(Lei 13.709/2018) e nas obrigações relacionadas à coleta, transferência e
+armazenamento de dados pessoais.
+
+CONTEXTO
+O BrainIAc é local-first — a maior parte dos dados nunca sai da máquina.
+Mas três superfícies de coleta existem:
+  1. Posthog Analytics (opt-in) — eventos de uso enviados para servidores fora do BR
+  2. APIs externas (Gemini, OpenAI, Anthropic, Groq) — mensagens do chat + contexto da base
+  3. Google Drive OAuth — autenticação e sincronização de arquivos
+
+ACHADOS — AUDITORIA LGPD (Junho 2026)
+
+CRÍTICO
+· Dado potencialmente pessoal enviado ao Posthog sem declaração
+  O evento Analytics.canalConfigurado envia o parâmetro {canal: url}
+  para o Posthog. A URL do canal revela qual criador o usuário está
+  monitorando — dado de comportamento com contexto profissional.
+  Não foi declarado na ConsentModal nem na política de privacidade.
+  LGPD Art. 7 exige base legal e ciência do titular para cada dado coletado.
+  Fix: remover o parâmetro {canal} do payload do evento.
+  Alternativa se necessário para analytics: enviar apenas hash do domínio.
+
+ALTO
+· Transferência internacional não informada na UI de configuração de API
+  Ao configurar Gemini, OpenAI, Anthropic ou Groq, as mensagens de chat
+  e trechos da base de conhecimento saem da máquina para servidores fora
+  do Brasil (EUA, UE). LGPD Art. 33 exige informar sobre transferência
+  internacional antes da coleta.
+  A UI atual não faz nenhum aviso sobre isso — o usuário não tem ciência
+  de que seu conteúdo vai sair da máquina ao usar provedores externos.
+  Fix: adicionar alerta contextual no card de cada provedor externo.
+
+· Consentimento analytics não revogável pela UI
+  A ConsentModal solicita opt-in na primeira execução.
+  Não há mecanismo de revogação posterior — violação do Art. 18, VI da LGPD
+  ("direito à revogação do consentimento a qualquer momento").
+  Fix: adicionar toggle "Desativar analytics" nas configurações do agente.
+
+MÉDIO
+· Política de privacidade ausente
+  Obrigatória antes do OAuth em produção (requisito do Google para apps
+  com acesso ao Drive) e antes de qualquer distribuição pública.
+  Precisa cobrir: dados locais, Posthog, APIs externas, Drive OAuth,
+  direitos do titular, canais de contato.
+
+· Onboarding não menciona saída de dados ao configurar API externa
+  O passo "Configure sua chave de API" não informa ao usuário que,
+  ao usar provedores como Gemini ou OpenAI, o conteúdo do chat e da
+  base sai da máquina. Informação mínima exigida pelo princípio da
+  transparência (Art. 6, VI da LGPD).
+
+BAIXO
+· Chave Posthog exposta no bundle JS (web_interface/.env → build)
+  Baixo risco: a chave tem somente permissão de escrita (captura eventos,
+  não lê dados de outros usuários). Mas expô-la em texto claro num bundle
+  distribuído não é ideal. Para v1.0: injetar via variável de ambiente
+  no processo Electron sem incluir no bundle estático.
+
+AÇÕES PRIORITÁRIAS
+✅ Remover {canal} do payload de Analytics.canalConfigurado — CRÍTICO
+✅ Aviso de transferência internacional nos cards de API externa — ALTO
+✅ Toggle de revogação de consentimento nas configurações — ALTO
+○ Política de privacidade antes do lançamento público — MÉDIO
+○ Menção de transferência de dados no onboarding (step de API) — MÉDIO
+
+─────────────────────────────────────────
+8. REVISÃO FUNCIONAL DE PRODUTO
+─────────────────────────────────────────
+
+Revisão em Junho 2026 focada em paridade entre o que a UI promete
+e o que o backend entrega, lacunas de funcionalidade e coerência
+entre versão declarada e estado real do produto.
+
+ACHADOS (Junho 2026)
+
+CRÍTICO
+· Toggle "Busca Ampla" tem zero efeito funcional
+  O estado buscaAmpla é gerenciado corretamente no frontend (useState,
+  tooltip, visual feedback) mas o parâmetro busca_ampla não é incluído
+  no payload enviado ao backend em sendChatStream (~App.jsx linha 453).
+  Todas as perguntas rodam em modo restrito, independente do toggle.
+  Impacto: funcionalidade anunciada, zero efeito real. Se o usuário
+  notar, quebra a confiança no produto inteiro.
+  Fix: adicionar busca_ampla: buscaAmpla no objeto do payload.
+
+ALTO
+· Groq disponível no backend mas invisível na UI de provedores
+  O backend suporta Groq (free tier, sem cartão), mas a UI lista apenas
+  Gemini, OpenAI e Anthropic. Groq é especialmente relevante para usuários
+  sem acesso a cartão de crédito internacional (público BR principal).
+  Fix: adicionar card Groq na seção de provedores do AgentConfig.
+
+· Versão declarada no footer não condiz com versão real do produto
+  Footer exibe "Versão 2.0 Web" em todos os idiomas (pt, en, es).
+  O produto está em v0.4.3. A discrepância enfraquece credibilidade
+  ao mostrar a ferramenta para clientes ou ao tirar screenshot para
+  divulgação.
+  Fix: atualizar chave footer.version nos três arquivos de i18n.
+
+MÉDIO
+· Analytics.chatPergunta() definido mas nunca invocado
+  O método existe em analytics.js e está previsto no plano de telemetria,
+  mas nenhuma chamada foi adicionada ao fluxo de envio de mensagem.
+  Isso cega a principal métrica de valor (Time to First Value Answer).
+  Fix: chamar Analytics.chatPergunta() no handler de envio do chat.
+
+· Nenhum indicador de "base desatualizada" na home card do agente
+  Após extrair novos vídeos, o usuário não tem feedback visual na home
+  de que precisa reindexar. Só descobre quando entra na aba do agente.
+  Fix: badge "X vídeos novos para indexar" na home card do agente.
+
+· Erro de Ollama offline não diferenciado do erro genérico de servidor
+  Quando o Ollama trava, o chat exibe "Erro ao conectar com servidor" —
+  o mesmo erro de qualquer falha de rede. O usuário não sabe se é o
+  Ollama, o FastAPI ou a conexão.
+  Fix: detectar status Ollama no payload de erro e exibir mensagem específica.
+
+AÇÕES PRIORITÁRIAS
+✅ Fix crítico: busca_ampla no payload (App.jsx ~linha 453)
+✅ Adicionar Groq na UI de provedores de IA
+✅ Corrigir footer.version nos três locales (pt, en, es)
+○ Chamar Analytics.chatPergunta() no envio do chat
+○ Badge "vídeos novos para indexar" na home card
+○ Mensagem específica "Ollama offline" no chat
+
+─────────────────────────────────────────
 MATRIZ DE PRIORIDADES CONSOLIDADA
 ─────────────────────────────────────────
 
@@ -258,19 +412,32 @@ SEGURANÇA — PRÉ-LANÇAMENTO (bloqueia distribuição)
 ✅ Fix ② Validação de playlist ID no yt-dlp
 ✅ Fix ③ Limite de tamanho no upload (50 MB)
 ✅ Fix ④ Path traversal check no delete
+✅ Fix ⑤ dangerouslySetInnerHTML eliminado
+~ Fix ⑥ Chaves API plaintext — mitigado (aviso + modal Drive)
+
+REVISÃO UX + LGPD + PRODUTO — CORREÇÕES URGENTES
+✅ Fix crítico UX/Produto: busca_ampla no payload (App.jsx ~linha 453)
+✅ Fix LGPD crítico: remover {canal} de Analytics.canalConfigurado
+✅ Fix LGPD alto: aviso transferência internacional nos cards de API externa
+✅ Fix Produto alto: adicionar Groq na UI de provedores
+✅ Fix Produto alto: corrigir footer.version (pt + en + es) → v0.4.3
+✅ Fix LGPD alto: toggle revogação de consentimento analytics nas configurações
 
 QUANDO PRONTO PARA LANÇAR (decisão pendente)
 → Ver "Documentação do Produto/Próximos passos.txt"
 ○ Landing page mínima
 ○ Primeira venda B2B formal
+○ Política de privacidade (obrigatória para OAuth em produção)
 
 MÉDIO PRAZO (evolução de produto)
 ○ Sistema de licença Lemon Squeezy
 ○ Testes automatizados nos endpoints críticos
-○ Migrar chaves API para keychain do OS
+○ Migrar chaves API para keychain do OS (Fix ⑥ definitivo)
 ○ Recovery automático de índice corrompido
 ○ Busca web (Brave Search API)
 ○ Imagens na base (Gemma 4 multimodal / OCR fallback)
+○ Analytics.chatPergunta() ativo (Time to Value)
+○ Mensagem específica "Ollama offline" no chat
 
 LONGO PRAZO (escala)
 ○ Context API / Zustand para estado global
