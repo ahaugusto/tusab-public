@@ -126,27 +126,59 @@ SÓLIDO
 · OAuth com escopo drive.file mínimo
 · Sem servidor central para ser atacado
 · Extração roda no IP residencial do usuário
+· Electron configurado corretamente: contextIsolation=true, nodeIntegration=false
+· subprocess usa lista (nunca shell=True) — sem shell injection
+· .gitignore protege credentials, token, .env, crash.log
+· Sanitização de nome de arquivo com regex já implementada
 
-PREOCUPA
-· API sem autenticação
-  Qualquer processo local pode chamar os endpoints em localhost:8001.
-  Aceitável para desktop single-user. Problemático se migrar para web
-  ou modo servidor institucional.
+AUDITORIA COMPLETA — Junho 2026
+Realizada análise de código end-to-end. Achados por severidade:
 
-· Chaves de API em texto plano (agent_config.json)
-  Para uso pessoal é ok. Para distribuição comercial deveria usar
-  o keychain do sistema operacional (Electron tem suporte nativo via
-  keytar). Evita exposição se o arquivo for copiado inadvertidamente.
+CRÍTICO (bloqueia distribuição)
+① CORS aberto — allow_origins=["*"] com allow_credentials=True
+  Qualquer site ou processo local pode chamar qualquer endpoint da API.
+  Arquivo: api_brainiac.py linha 27
+  Fix: restringir a ["http://localhost:8001", "http://127.0.0.1:8001"]
 
-· brainiac_crash.log commitado no git
-  Pode expor caminhos, erros e detalhes do sistema em repositório.
-  Deve ser adicionado ao .gitignore imediatamente.
+② yt-dlp recebe playlist ID sem validação de formato
+  ID vem da saída do próprio yt-dlp mas sem sanitização posterior.
+  Um canal malicioso poderia injetar argumentos via ID de playlist.
+  Arquivo: motor_brainiac.py linha 503
+  Fix: validar com regex ^[A-Za-z0-9_\-]{10,50}$ antes de montar URL
+
+ALTO (corrigir antes do lançamento)
+③ Upload sem limite de tamanho
+  await arquivo.read() sem MAX_FILE_SIZE → DoS por arquivo gigante.
+  Arquivo: api_brainiac.py linha 767
+  Fix: limitar a 50 MB, rejeitar com mensagem clara
+
+④ Path traversal no delete de arquivo
+  os.path.join() sem validação os.path.realpath() pode sair do subdir.
+  Arquivo: api_brainiac.py linha 864
+  Fix: verificar que caminho real está dentro do subdiretório permitido
+
+MÉDIO (corrigir antes da v1.0)
+⑤ dangerouslySetInnerHTML sem sanitização
+  Arquivo: App.jsx linha 726 — string de i18n renderizada como HTML raw
+  Fix: remover ou usar DOMPurify
+
+⑥ Chaves de API em plaintext (agent_config.json)
+  Para MVP é aceitável. Para v1.0 migrar para keychain do OS via keytar.
+  Já mapeado no roadmap de médio prazo.
+
+BAIXO (backlog)
+⑦ Campos Pydantic sem limite de tamanho (mensagem, historico)
+  Fix: Field(..., max_length=5000) e Field(default=[], max_length=20)
 
 AÇÕES PRIORITÁRIAS
-✅ Adicionar brainiac_crash.log ao .gitignore (ação imediata)
-○ Migrar armazenamento de chaves API para keychain do OS via keytar
-○ Adicionar token de autenticação local para a API quando houver
-  modo servidor institucional (fase 4)
+✅ brainiac_crash.log ao .gitignore
+○ Fix ① CORS — api_brainiac.py (imediato, 5 min)
+○ Fix ② yt-dlp playlist validation — motor_brainiac.py (imediato, 5 min)
+○ Fix ③ Upload size limit — api_brainiac.py (imediato, 5 min)
+○ Fix ④ Path traversal — api_brainiac.py (imediato, 5 min)
+○ Fix ⑤ dangerouslySetInnerHTML — App.jsx (antes da v1.0)
+○ Fix ⑥ Keychain via keytar — médio prazo
+○ Fix ⑦ Pydantic field limits — backlog
 
 ─────────────────────────────────────────
 5. ESTRATEGISTA DE NEGÓCIO
@@ -218,7 +250,14 @@ IMEDIATO (zero ou baixo esforço, alto impacto)
 CURTO PRAZO (sprint de produto)
 ✅ Telemetria Posthog opt-in (ConsentModal + analytics.js)
 ✅ Onboarding contextual — ProgressToast + hints por aba
-~~Botão "Exportar base"~~ — descartado (Drive já cobre backup e compartilhamento)
+✅ Seletor de modelos Ollama (Configurações Avançadas) — v0.4.3
+~~Botão "Exportar base"~~ — descartado (Drive já cobre)
+
+SEGURANÇA — PRÉ-LANÇAMENTO (bloqueia distribuição)
+○ Fix ① CORS restrito a localhost
+○ Fix ② Validação de playlist ID no yt-dlp
+○ Fix ③ Limite de tamanho no upload (50 MB)
+○ Fix ④ Path traversal check no delete
 
 QUANDO PRONTO PARA LANÇAR (decisão pendente)
 → Ver "Documentação do Produto/Próximos passos.txt"
@@ -319,3 +358,9 @@ NOTAS DE EVOLUÇÃO
 · Roadmap de imagens/áudio simplificado: Gemma 4 processa nativamente
 · Conclusão estratégica: quanto melhor o ecossistema local, mais
   valioso o BrainIAc como camada de infraestrutura de conhecimento
+
+[Junho 2026 — auditoria de segurança]
+· Auditoria end-to-end realizada — 7 achados (2 críticos, 2 altos, 2 médios, 1 baixo)
+· Positivos confirmados: Electron seguro, sem shell=True, .gitignore correto
+· Bloqueadores de lançamento mapeados: CORS, yt-dlp, upload size, path traversal
+· Fixes ①–④ entram no próximo sprint como pré-requisito de distribuição
