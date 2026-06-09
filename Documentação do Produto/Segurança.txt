@@ -1,4 +1,4 @@
-SEGURANÇA — BrainIAc Engine
+﻿SEGURANÇA — Brain'IAC
 © 2026 CriAugu — Atualizado: Junho 2026
 
 Documento técnico e não-técnico sobre a postura de segurança do produto,
@@ -8,7 +8,7 @@ auditoria realizada e correções aplicadas.
 POR QUE SEGURANÇA IMPORTA AQUI
 ─────────────────────────────────────────
 
-O BrainIAc roda localmente na máquina do usuário.
+O Brain'IAC roda localmente na máquina do usuário.
 Isso é um diferencial de privacidade — mas não elimina riscos.
 
 Três superfícies de ataque existem mesmo num app desktop local:
@@ -44,7 +44,7 @@ Subprocessos seguros:
 
 Arquivos sensíveis protegidos:
 · credentials.json, token.json, .env, agent_config.json e
-  brainiac_crash.log estão no .gitignore — nunca foram commitados.
+  Brain'IAC_crash.log estão no .gitignore — nunca foram commitados.
 
 Sanitização de nomes de arquivo:
 · Nomes de arquivos enviados via upload passam por regex que remove
@@ -259,7 +259,7 @@ Fix ⑦ — Campos Pydantic sem limite de tamanho (BAIXO)
 POSTURA GERAL DE SEGURANÇA
 ─────────────────────────────────────────
 
-O BrainIAc tem uma postura de segurança boa para um app desktop local:
+O Brain'IAC tem uma postura de segurança boa para um app desktop local:
 · Sem servidor central para ser atacado ou comprometido
 · Dados nunca saem da máquina sem consentimento explícito do usuário
 · Electron configurado com as melhores práticas (contextIsolation, etc.)

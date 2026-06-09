@@ -1,4 +1,4 @@
-﻿PROPOSTA DE VALOR — BrainIAc
+﻿PROPOSTA DE VALOR — Brain'IAC
 © 2026 CriAugu — Atualizado: Junho 2026
 
 ─────────────────────────────────────────
@@ -20,30 +20,30 @@ Exemplos que chegaram ao inglês moderno:
   insomniac  → aquele definido pela insônia
   demoniac   → possuído pelo demônio
 
-"Brainiac", portanto, é a palavra que designa alguém definido pelo cérebro —
+"Brain'IAC", portanto, é a palavra que designa alguém definido pelo cérebro —
 o que pensa demais, o gênio, o obcecado por conhecimento.
 Não é slang moderno: é etimologia latina aplicada ao inglês coloquial
 do século XX.
 
-CAMADA 2 — BRAINIAC NOS QUADRINHOS (DC Comics, 1958)
+CAMADA 2 — Brain'IAC NOS QUADRINHOS (DC Comics, 1958)
 
-Brainiac estreou em Action Comics #242 (julho de 1958) como um dos
+Brain'IAC estreou em Action Comics #242 (julho de 1958) como um dos
 vilões mais inteligentes do universo DC e maior adversário do Superman.
 
-O que define o Brainiac canonicamente não é força bruta — é a obsessão
+O que define o Brain'IAC canonicamente não é força bruta — é a obsessão
 por colecionar e preservar conhecimento. Seu modus operandi:
 miniaturizar cidades inteiras e aprisioná-las em garrafas para preservar
 sua cultura, história e informação. Ele é, literalmente, um arquivista
 de civilizações.
 
-A ironia que o torna relevante para o produto: Brainiac não destrói
+A ironia que o torna relevante para o produto: Brain'IAC não destrói
 o conhecimento — ele o coleta, indexa e preserva. O problema é que
-não o compartilha. O BrainIAc inverte esse vetor: coleta, indexa,
+não o compartilha. O Brain'IAC inverte esse vetor: coleta, indexa,
 e devolve o conhecimento ao próprio dono.
 
 O nome também carrega o peso cultural de décadas como sinônimo de
 inteligência extrema no imaginário popular anglófono — "he's a real
-brainiac" é dito com admiração.
+Brain'IAC" é dito com admiração.
 
 CAMADA 3 — INTELLIGENCE AUGMENTATION (Douglas Engelbart, 1962)
 
@@ -60,7 +60,7 @@ os editores colaborativos — tudo com o mesmo princípio:
 não substituir o pensamento humano, mas expandir o que ele consegue
 alcançar. O computador como extensão da mente.
 
-O BrainIAc é um produto de IA no sentido de Engelbart:
+O Brain'IAC é um produto de IA no sentido de Engelbart:
 o usuário ainda decide o que aprender, o que questionar, o que concluir.
 O produto amplifica o acesso ao que ele já sabe.
 
@@ -73,8 +73,8 @@ As três camadas se encontram no nome:
   apostrofo → separação intencional, sinaliza que IAC é acrônimo
   "IAC"     → Index · Augment · Converse — e Intelligence Augmentation
 
-O Brainiac dos quadrinhos coleta conhecimento mas não o devolve.
-O BrainIAc coleta, augmenta e entrega de volta ao dono.
+O Brain'IAC dos quadrinhos coleta conhecimento mas não o devolve.
+O Brain'IAC coleta, augmenta e entrega de volta ao dono.
 Essa inversão é o produto.
 
 ─────────────────────────────────────────
@@ -133,7 +133,7 @@ Concorrentes que vivem nessa categoria: Notion, Obsidian, NotebookLM.
 POSICIONAMENTO CENTRAL
 ─────────────────────────────────────────
 
-BrainIAc é o seu mentor digital.
+Brain'IAC é o seu mentor digital.
 
 Não é uma busca. Não é um chatbot genérico.
 É um mentor que conhece exatamente o que você escolheu aprender —
@@ -143,7 +143,7 @@ A diferença entre buscar e perguntar para um mentor:
   Busca → você filtra, compara, decide o que é relevante
   Mentor → ele já sabe o que é relevante para você, e explica
 
-O mentor do BrainIAc só sabe o que você ensinou a ele.
+O mentor do Brain'IAC só sabe o que você ensinou a ele.
 Isso não é limitação — é a garantia de que ele não inventa.
 
 ─────────────────────────────────────────
@@ -201,16 +201,16 @@ DIFERENCIAIS REAIS
 POSIÇÃO NO MERCADO
 ─────────────────────────────────────────
 
-BrainIAc NÃO compete com assistentes de IA generativa.
+Brain'IAC NÃO compete com assistentes de IA generativa.
 São produtos diferentes com jobs to be done diferentes:
 
   IA generativa → "me explique qualquer coisa do mundo"
-  BrainIAc → "me ajude a acessar o conhecimento que eu já coletei"
+  Brain'IAC → "me ajude a acessar o conhecimento que eu já coletei"
 
 Não são substitutos — são complementares.
-O usuário do BrainIAc provavelmente usa algum LLM generativo também, para coisas diferentes. Posicionar contra IA generativa seria inaccurado e uma batalha que não faz sentido travar.
+O usuário do Brain'IAC provavelmente usa algum LLM generativo também, para coisas diferentes. Posicionar contra IA generativa seria inaccurado e uma batalha que não faz sentido travar.
 
-BrainIAc compete (e se diferencia) de sistemas PKM com IA:
+Brain'IAC compete (e se diferencia) de sistemas PKM com IA:
 NotebookLM, Notion AI, Obsidian AI, Mem, Roam Research AI.
 
 O diferencial que nenhum deles tem:
@@ -238,31 +238,31 @@ Onde o NotebookLM é melhor:
 · Audio Overview — resumo em formato podcast
 · Gratuito sem configuração
 
-Onde o BrainIAc se diferencia de verdade:
+Onde o Brain'IAC se diferencia de verdade:
 
 1. Escala de extração do YouTube
    NotebookLM aceita vídeos individuais.
-   BrainIAc extrai canais inteiros — centenas de vídeos — automaticamente.
+   Brain'IAC extrai canais inteiros — centenas de vídeos — automaticamente.
    Não é uma feature diferente. É uma magnitude diferente.
 
 2. Local-first — dados nunca saem da máquina
    NotebookLM processa nos servidores do Google.
    Para uso institucional (documentos internos, atas, dados sensíveis),
-   isso é bloqueador. Para o BrainIAc, é o design padrão.
+   isso é bloqueador. Para o Brain'IAC, é o design padrão.
 
 3. Sem dependência de conta Google ou nuvem
    Funciona offline com Ollama.
    Sem risco de descontinuação ou mudança de política de privacidade.
 
 Conclusão de posicionamento:
-A diferenciação real do BrainIAc não é "chat com documentos" —
+A diferenciação real do Brain'IAC não é "chat com documentos" —
 o NotebookLM já faz isso bem. É:
 
   Extração de canais YouTube em escala
   + processamento 100% local
   para quem não pode ou não quer mandar dados para nuvem.
 
-O NotebookLM valida o mercado. O BrainIAc ocupa o nicho que o
+O NotebookLM valida o mercado. O Brain'IAC ocupa o nicho que o
 NotebookLM deliberadamente não quer: local, privado, sem Google.
 
 ─────────────────────────────────────────
@@ -270,21 +270,21 @@ RELAÇÃO COM O ECOSSISTEMA LOCAL (Google, Ollama, Gemma)
 ─────────────────────────────────────────
 
 O Google lançar modelos cada vez melhores rodando localmente
-não é uma ameaça ao BrainIAc — é uma validação e um combustível.
+não é uma ameaça ao Brain'IAC — é uma validação e um combustível.
 
-O Google entrega o motor. O BrainIAc entrega a camada de conhecimento.
+O Google entrega o motor. O Brain'IAC entrega a camada de conhecimento.
 São complementares, não concorrentes.
 
   Motor (Gemma 4, Ollama) → processa linguagem
-  BrainIAc → extrai, indexa, cita fontes, entrega interface
+  Brain'IAC → extrai, indexa, cita fontes, entrega interface
 
-Quanto melhor o motor disponível, mais capaz fica o mentor do BrainIAc.
+Quanto melhor o motor disponível, mais capaz fica o mentor do Brain'IAC.
 O usuário não precisa saber que existe um Gemma 4 por baixo.
 Ele só sabe que o mentor ficou mais inteligente.
 
 O NotebookLM (Google) faz algo parecido, mas nunca vai querer
 o nicho local/privado — é um produto de nuvem por design.
-Esse espaço fica estruturalmente aberto. O BrainIAc ocupa.
+Esse espaço fica estruturalmente aberto. O Brain'IAC ocupa.
 
 ─────────────────────────────────────────
 ARQUITETURA NARRATIVA
@@ -300,7 +300,7 @@ Segunda camada (construção de confiança):
   Diferencia de IA genérica sem precisar atacar ninguém.
 
 Braço estratégico (para B2B e perfis avançados):
-  "Num mundo de conteúdo sem autoria, BrainIAc é
+  "Num mundo de conteúdo sem autoria, Brain'IAC é
    o assistente que você pode auditar."
   Argumento de governança para instituições. Não é linha de frente.
 
@@ -317,7 +317,7 @@ O próximo passo é a primeira venda B2B como plataforma.
 PITCH DE UM PARÁGRAFO
 ─────────────────────────────────────────
 
-"BrainIAc é o seu mentor digital. Você extrai canais do YouTube,
+"Brain'IAC é o seu mentor digital. Você extrai canais do YouTube,
 adiciona seus PDFs, documentos e anotações — tudo vira um mentor
 que responde suas perguntas citando a fonte exata de onde veio.
 Roda na sua máquina, funciona offline, zero custo com Ollama.
