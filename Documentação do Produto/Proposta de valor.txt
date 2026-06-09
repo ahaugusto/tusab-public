@@ -5,6 +5,80 @@
 O NOME: BRAIN'IAC
 ─────────────────────────────────────────
 
+CONTEXTO HISTÓRICO
+
+Para entender o nome, é preciso passar por três camadas históricas
+que convergem no mesmo ponto.
+
+CAMADA 1 — A ETIMOLOGIA DO SUFIXO "-IAC" (Latim/Grego, séc. III a.C.)
+
+O sufixo "-iac" vem do latim "-iacus" e do grego "-iakos", e significa
+"aquele que é caracterizado por" ou "relativo a".
+Exemplos que chegaram ao inglês moderno:
+  cardiac    → relativo ao coração (kardia)
+  maniac     → aquele definido pela mania
+  insomniac  → aquele definido pela insônia
+  demoniac   → possuído pelo demônio
+
+"Brainiac", portanto, é a palavra que designa alguém definido pelo cérebro —
+o que pensa demais, o gênio, o obcecado por conhecimento.
+Não é slang moderno: é etimologia latina aplicada ao inglês coloquial
+do século XX.
+
+CAMADA 2 — BRAINIAC NOS QUADRINHOS (DC Comics, 1958)
+
+Brainiac estreou em Action Comics #242 (julho de 1958) como um dos
+vilões mais inteligentes do universo DC e maior adversário do Superman.
+
+O que define o Brainiac canonicamente não é força bruta — é a obsessão
+por colecionar e preservar conhecimento. Seu modus operandi:
+miniaturizar cidades inteiras e aprisioná-las em garrafas para preservar
+sua cultura, história e informação. Ele é, literalmente, um arquivista
+de civilizações.
+
+A ironia que o torna relevante para o produto: Brainiac não destrói
+o conhecimento — ele o coleta, indexa e preserva. O problema é que
+não o compartilha. O BrainIAc inverte esse vetor: coleta, indexa,
+e devolve o conhecimento ao próprio dono.
+
+O nome também carrega o peso cultural de décadas como sinônimo de
+inteligência extrema no imaginário popular anglófono — "he's a real
+brainiac" é dito com admiração.
+
+CAMADA 3 — INTELLIGENCE AUGMENTATION (Douglas Engelbart, 1962)
+
+Em 1962, o engenheiro Douglas Engelbart publicou o paper
+"Augmenting Human Intellect: A Conceptual Framework" para a DARPA.
+Engelbart cunhou o conceito de IA — Intelligence Augmentation —
+como algo filosoficamente distinto de AI (Artificial Intelligence):
+
+  AI  → máquina que substitui o humano em uma tarefa cognitiva
+  IA  → ferramenta que amplifica a capacidade cognitiva humana
+
+Engelbart vislumbrou e depois construiu o mouse, o hipertexto,
+os editores colaborativos — tudo com o mesmo princípio:
+não substituir o pensamento humano, mas expandir o que ele consegue
+alcançar. O computador como extensão da mente.
+
+O BrainIAc é um produto de IA no sentido de Engelbart:
+o usuário ainda decide o que aprender, o que questionar, o que concluir.
+O produto amplifica o acesso ao que ele já sabe.
+
+─────────────────────────────────────────
+A CONVERGÊNCIA
+
+As três camadas se encontram no nome:
+
+  "Brain"   → o cérebro humano, o conhecimento que o usuário acumulou
+  apostrofo → separação intencional, sinaliza que IAC é acrônimo
+  "IAC"     → Index · Augment · Converse — e Intelligence Augmentation
+
+O Brainiac dos quadrinhos coleta conhecimento mas não o devolve.
+O BrainIAc coleta, augmenta e entrega de volta ao dono.
+Essa inversão é o produto.
+
+─────────────────────────────────────────
+
 O apostrofo no nome não é ornamental — ele separa dois conceitos:
 
   BRAIN  →  o cérebro do usuário, o conhecimento que ele acumulou
