@@ -2,6 +2,45 @@
 © 2026 CriAugu — Atualizado: Junho 2026
 
 ─────────────────────────────────────────
+O NOME: BRAIN'IAC
+─────────────────────────────────────────
+
+O apostrofo no nome não é ornamental — ele separa dois conceitos:
+
+  BRAIN  →  o cérebro do usuário, o conhecimento que ele acumulou
+  'IAC   →  o que o produto faz com esse conhecimento
+
+IAC é o acrônimo do pipeline central do produto:
+
+  I — INDEX
+      Extração e indexação de qualquer fonte de conhecimento:
+      YouTube, PDFs, Word, Markdown, texto colado.
+      O produto ingere, processa e estrutura o que você escolheu aprender.
+
+  A — AUGMENT
+      Retrieval-Augmented Generation (RAG): quando você faz uma pergunta,
+      o produto recupera os trechos mais relevantes da sua base e os
+      entrega ao modelo de linguagem como contexto.
+      Não é IA genérica — é sua base amplificando a resposta.
+
+  C — CONVERSE
+      A interface de conversa com o agente: você pergunta em linguagem
+      natural, recebe resposta com citação de fonte, pode aprofundar,
+      questionar, pedir exemplos. É o ponto de entrega do valor.
+
+A leitura completa do nome:
+  Brain'IAC = o seu cérebro, amplificado por um pipeline de
+              Index → Augment → Converse.
+
+Por que "Augment" e não "Artificial Intelligence":
+  O produto não substitui o julgamento humano — ele amplia a capacidade
+  de acessar e usar o conhecimento que o próprio usuário escolheu acumular.
+  Isso é Intelligence Augmentation (IA), conceito distinto de AI.
+  O mentor não inventa. Ele só sabe o que você ensinou a ele.
+
+Tagline proposta: INDEX · AUGMENT · CONVERSE
+
+─────────────────────────────────────────
 CATEGORIA DE MERCADO: PKM
 ─────────────────────────────────────────
 
