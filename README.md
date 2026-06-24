@@ -143,11 +143,15 @@ O Tusab é software proprietário. O código-fonte não é público, mas a arqui
 - Acordo de licença do instalador corrigido (referência ao produto anterior removida)
 - E-mail de contato unificado para tusab@tusab.solutions
 - Base selecionada no chat persiste entre recarregamentos da página
-- Alerta ao tentar extrair um canal já indexado (evita extração duplicada acidental)
-- Seletor de projeto existente com feedback visual mais claro
+- Alerta ao tentar extrair canal já indexado — evita extração duplicada acidental
+- Modal de projeto: input oculto ao selecionar projeto existente; card de confirmação com botão Trocar
+- Seletor de projeto com feedback visual claro (fundo sólido + check + escala)
+- Chips viram select quando há mais de 4 projetos (evita overflow do modal)
 - Atalho para pasta local de cada base no Repositório
 - Tooltip no botão de chat (hover e teclado)
-- Dependências Python documentadas com versões mínimas
+- Link de download direto do .exe (sem necessidade de login no GitHub)
+- Dependências Python documentadas com versões mínimas pinadas por seção
+- Repositório público criado: github.com/ahaugusto/tusab-public
 
 ### [1.0.0] — 2026-06-20
 
