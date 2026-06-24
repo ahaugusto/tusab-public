@@ -151,7 +151,8 @@ O Tusab é software proprietário. O código-fonte não é público, mas a arqui
 - Tooltip no botão de chat (hover e teclado)
 - Link de download direto do .exe (sem necessidade de login no GitHub)
 - Dependências Python documentadas com versões mínimas pinadas por seção
-- Repositório público criado: github.com/ahaugusto/tusab-public
+- Tela de loading atualizada com novo visual (alinhada ao design atual)
+- Correção crítica: python não era encontrado ao instalar em outro PC (caminho errado no empacotador)
 
 ### [1.0.0] — 2026-06-20
 
