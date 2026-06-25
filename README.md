@@ -10,7 +10,7 @@ Desenvolvido por **Augusto Brasil** · [CriAugu](https://linkedin.com/in/augusto
 
 ## Download
 
-**[⬇ Tusab Setup 1.0.2.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.2/Tusab.Setup.1.0.2.exe)** — Windows 10/11 x64 · ~210 MB · inclui Python e yt-dlp embutidos
+**[⬇ Tusab Setup 1.0.3.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.3/Tusab.Setup.1.0.3.exe)** — Windows 10/11 x64 · ~210 MB · inclui Python e yt-dlp embutidos
 
 > Não requer instalação de Python, Ollama ou qualquer dependência adicional. O instalador cuida de tudo.
 
@@ -137,6 +137,11 @@ O Tusab é software proprietário. O código-fonte não é público, mas a arqui
 ---
 
 ## Changelog
+
+### [1.0.3] — 2026-06-24
+
+- Fix crítico: crash imediato do backend em instalações novas (ModuleNotFoundError: motor_tusab)
+- Tela de loading alinhada visualmente com a landing: pulsos animados no grid, glow azul/violeta
 
 ### [1.0.2] — 2026-06-24
 
