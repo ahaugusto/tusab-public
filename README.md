@@ -10,7 +10,7 @@ Desenvolvido por **Augusto Brasil** · [CriAugu](https://linkedin.com/in/augusto
 
 ## Download
 
-**[⬇ Tusab Setup 1.0.4.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.4/Tusab.Setup.1.0.4.exe)** — Windows 10/11 x64 · ~210 MB · inclui Python e yt-dlp embutidos
+**[⬇ Tusab Setup 1.0.6.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.6/Tusab.Setup.1.0.6.exe)** — Windows 10/11 x64 · ~210 MB · inclui Python e yt-dlp embutidos
 
 > Não requer instalação de Python, Ollama ou qualquer dependência adicional. O instalador cuida de tudo.
 
@@ -137,6 +137,14 @@ O Tusab é software proprietário. O código-fonte não é público, mas a arqui
 ---
 
 ## Changelog
+
+### [1.0.6] — 2026-06-25
+
+- Instalador em 3 idiomas: Português (padrão), Inglês e Espanhol — detectado automaticamente pelo Windows
+- Chat bloqueado com aviso claro quando Ollama está ativo mas sem modelo instalado
+- Versão, ano de copyright e e-mail de suporte nunca mais ficam desatualizados — injetados automaticamente em cada build
+- Fix: chip "✓ ativo" no seletor de modelos aparecia incorretamente sem modelo instalado
+- Fix: e-mail de suporte com erro de digitação na aba Admin
 
 ### [1.0.4] — 2026-06-25
 
