@@ -10,7 +10,7 @@ Desenvolvido por **Augusto Brasil** · [CriAugu](https://linkedin.com/in/augusto
 
 ## Download
 
-**[⬇ Tusab Setup 1.0.1.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.1/Tusab.Setup.1.0.1.exe)** — Windows 10/11 x64 · ~210 MB · inclui Python e yt-dlp embutidos
+**[⬇ Tusab Setup 1.0.2.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.2/Tusab.Setup.1.0.2.exe)** — Windows 10/11 x64 · ~210 MB · inclui Python e yt-dlp embutidos
 
 > Não requer instalação de Python, Ollama ou qualquer dependência adicional. O instalador cuida de tudo.
 
@@ -137,6 +137,12 @@ O Tusab é software proprietário. O código-fonte não é público, mas a arqui
 ---
 
 ## Changelog
+
+### [1.0.2] — 2026-06-24
+
+- Fix: timeout do backend aumentado para 90 segundos — resolve erro "Timeout aguardando backend" na primeira execução em máquinas novas
+- Feedback progressivo na tela de loading durante a inicialização dos modelos de IA
+- Log do Python exibido no diálogo de erro para facilitar diagnóstico
 
 ### [1.0.1] — 2026-06-24
 
