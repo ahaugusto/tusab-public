@@ -10,7 +10,7 @@ Desenvolvido por **Augusto Brasil** · [CriAugu](https://linkedin.com/in/augusto
 
 ## Download
 
-**[⬇ Tusab Setup 1.0.6.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.6/Tusab.Setup.1.0.6.exe)** — Windows 10/11 x64 · ~210 MB · inclui Python e yt-dlp embutidos
+**[⬇ Tusab Setup 1.0.7.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.7/Tusab.Setup.1.0.7.exe)** — Windows 10/11 x64 · ~223 MB · inclui Python e yt-dlp embutidos
 
 > Não requer instalação de Python, Ollama ou qualquer dependência adicional. O instalador cuida de tudo.
 
@@ -137,6 +137,12 @@ O Tusab é software proprietário. O código-fonte não é público, mas a arqui
 ---
 
 ## Changelog
+
+### [1.0.7] — 2026-06-25
+
+- Fix crítico: export de PDF não funcionava no app instalado — dependência ausente no bundle
+- PDFs com colunas e tabelas agora extraem texto corretamente
+- PDFs escaneados (sem camada de texto) são aceitos no repositório com aviso, em vez de serem rejeitados
 
 ### [1.0.6] — 2026-06-25
 
