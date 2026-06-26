@@ -10,7 +10,7 @@ Desenvolvido por **Augusto Brasil** · [CriAugu](https://linkedin.com/in/augusto
 
 ## Download
 
-**[⬇ Tusab Setup 1.0.8.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.8/Tusab.Setup.1.0.8.exe)** — Windows 10/11 x64 · ~223 MB · inclui Python e yt-dlp embutidos
+**[⬇ Tusab Setup 1.0.9.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.9/Tusab.Setup.1.0.9.exe)** — Windows 10/11 x64 · ~212 MB · inclui Python e yt-dlp embutidos
 
 > Não requer instalação de Python, Ollama ou qualquer dependência adicional. O instalador cuida de tudo.
 
@@ -137,6 +137,10 @@ O Tusab é software proprietário. O código-fonte não é público, mas a arqui
 ---
 
 ## Changelog
+
+### [1.0.9] — 2026-06-25
+
+- Tela de loading com logo completo do ibis (ibis + TUSAB + INDEX ASCEND CONVERSE) em vez de texto puro
 
 ### [1.0.8] — 2026-06-25
 
