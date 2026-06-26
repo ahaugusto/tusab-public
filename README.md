@@ -10,7 +10,7 @@ Desenvolvido por **Augusto Brasil** · [CriAugu](https://linkedin.com/in/augusto
 
 ## Download
 
-**[⬇ Tusab Setup 1.0.7.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.7/Tusab.Setup.1.0.7.exe)** — Windows 10/11 x64 · ~223 MB · inclui Python e yt-dlp embutidos
+**[⬇ Tusab Setup 1.0.8.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.8/Tusab.Setup.1.0.8.exe)** — Windows 10/11 x64 · ~223 MB · inclui Python e yt-dlp embutidos
 
 > Não requer instalação de Python, Ollama ou qualquer dependência adicional. O instalador cuida de tudo.
 
@@ -137,6 +137,14 @@ O Tusab é software proprietário. O código-fonte não é público, mas a arqui
 ---
 
 ## Changelog
+
+### [1.0.8] — 2026-06-25
+
+- **Fix: fila de extração perdida ao fechar o app** — jobs enfileirados agora sobrevivem a crashes e reinicializações (persistência em disco a cada mutação)
+- **Fix: race condition no histórico de chat** — chats concorrentes no mesmo canal não sobrescrevem mais o histórico um do outro
+- **Chunking dinâmico por tipo de documento** — PDFs usam janelas maiores (1.500 chars) para capturar raciocínio contínuo; textos e WhatsApp usam janelas menores (500 chars) para chunks mais precisos. Melhora o recall do RAG
+- **Toast informativo ao carregar o CrossEncoder** — busca ampla na primeira execução exibe aviso "Carregando modelo de relevância semântica (~30s)"
+- **Bundle do frontend 50% menor** — 1.081 KB → 538 KB com code splitting por vendor
 
 ### [1.0.7] — 2026-06-25
 
