@@ -10,7 +10,7 @@ Desenvolvido por **Augusto Brasil** · [CriAugu](https://linkedin.com/in/augusto
 
 ## Download
 
-**[⬇ Tusab Setup 1.0.9.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.9/Tusab.Setup.1.0.9.exe)** — Windows 10/11 x64 · ~212 MB · inclui Python e yt-dlp embutidos
+**[⬇ Tusab Setup 1.0.10.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.10/Tusab.Setup.1.0.10.exe)** — Windows 10/11 x64 · ~213 MB · inclui Python e yt-dlp embutidos
 
 > Não requer instalação de Python, Ollama ou qualquer dependência adicional. O instalador cuida de tudo.
 
@@ -137,6 +137,16 @@ O Tusab é software proprietário. O código-fonte não é público, mas a arqui
 ---
 
 ## Changelog
+
+### [1.0.10] — 2026-06-26
+
+- **MCP Server** — conecte o Tusab ao Claude Code, Cursor ou qualquer agente MCP. Sua base de conhecimento vira uma ferramenta de busca para IAs externas. Configure em Agente → aba MCP.
+- **Modo Estudo** — gere flashcards com flip 3D e resumos estruturados de qualquer base indexada. Export para Anki (CSV).
+- **Digest Semanal** — síntese automática dos conteúdos adicionados na última semana, gerada pelo LLM local.
+- **Timestamp clicável** — fontes de vídeo YouTube no chat mostram link ▶ MM:SS que abre o YouTube no minuto exato citado.
+- **RAG aprimorado**: filtro por data (perguntas temporais priorizam conteúdo do período) + boost de engajamento (vídeos mais vistos têm leve prioridade, máx 1.2×).
+- **Fix WhatsApp multilinha** — mensagens com quebras de linha internas agora são capturadas corretamente.
+- **Ollama inteligente** — wizard de setup some automaticamente quando o Ollama já está configurado.
 
 ### [1.0.9] — 2026-06-25
 
