@@ -1,4 +1,4 @@
-# Tusab
+﻿# Tusab
 
 **INDEX · AUGMENT · CONVERSE**
 
@@ -10,7 +10,7 @@ Desenvolvido por **Augusto Brasil** · [CriAugu](https://linkedin.com/in/augusto
 
 ## Download
 
-**[⬇ Tusab Setup 1.0.10.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.10/Tusab.Setup.1.0.10.exe)** — Windows 10/11 x64 · ~213 MB · inclui Python e yt-dlp embutidos
+**[⬇ Tusab Setup 1.0.13.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.13/Tusab%20Setup%201.0.13.exe)** — Windows 10/11 x64 · ~223 MB · inclui Python e yt-dlp embutidos
 
 > Não requer instalação de Python, Ollama ou qualquer dependência adicional. O instalador cuida de tudo.
 
@@ -138,6 +138,26 @@ O Tusab é software proprietário. O código-fonte não é público, mas a arqui
 
 ## Changelog
 
+### [1.0.13] - 2026-06-28
+
+- Fix: onboarding invisivel no primeiro acesso (regressao v1.0.12) corrigido
+- Notificacao de update na landing: badge aparece abaixo do botao Entrar quando ha nova versao disponivel
+- Licenca do instalador agora em PT/EN/ES
+
+### [1.0.12] - 2026-06-28
+
+- Capitulos como fronteiras de chunk BM25: videos com capitulos geram chunks individuais por capitulo no indice
+- Deduplicacao semantica: pipeline RAG descarta chunks quase identicos (Jaccard 85%) antes de enviar ao LLM
+- Mapa de cobertura pre-extracao: modal exibe total de videos, views e topicos ao digitar URL do canal
+- Acessibilidade: botao de anexo e tooltip acessiveis via teclado (aria-label, aria-describedby)
+
+### [1.0.11] - 2026-06-27
+
+- Modo Estudo robusto: parser de flashcards com 3 estrategias de fallback; amostragem distribuida no corpus
+- RAG denso: chunk adaptativo por tipo (1500 chars docs / 1200 chars WhatsApp); score minimo adaptativo
+- Historico de chat indexavel: auto-salvamento e injecao no corpus BM25
+- Acessibilidade de modais: aria-hidden no root quando modal aberta; focus trap e restauracao de foco
+- Sub-abas com padrao underline consistente entre Extracao e Agente
 ### [1.0.10] — 2026-06-26
 
 - **MCP Server** — conecte o Tusab ao Claude Code, Cursor ou qualquer agente MCP. Sua base de conhecimento vira uma ferramenta de busca para IAs externas. Configure em Agente → aba MCP.
