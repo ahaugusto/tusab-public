@@ -10,7 +10,7 @@ Desenvolvido por **Augusto Brasil** · [CriAugu](https://linkedin.com/in/augusto
 
 ## Download
 
-**[⬇ Tusab Setup 1.0.13.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.13/Tusab%20Setup%201.0.13.exe)** — Windows 10/11 x64 · ~223 MB · inclui Python e yt-dlp embutidos
+**[⬇ Tusab Setup 1.0.14.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.14/Tusab%20Setup%201.0.14.exe)** — Windows 10/11 x64 · ~223 MB · inclui Python e yt-dlp embutidos
 
 > Não requer instalação de Python, Ollama ou qualquer dependência adicional. O instalador cuida de tudo.
 
@@ -137,6 +137,10 @@ O Tusab é software proprietário. O código-fonte não é público, mas a arqui
 ---
 
 ## Changelog
+
+### [1.0.14] - 2026-06-28
+
+- Fix: ConsentModal invisivel apos selecionar perfil no onboarding — tela de consentimento ficava atras da landing. Mesmo padrao do bug do Onboarding (v1.0.12): position:fixed proprio ignora z-index do pai.
 
 ### [1.0.13] - 2026-06-28
 
