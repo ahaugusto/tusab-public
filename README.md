@@ -23,7 +23,7 @@ Tusab é um sistema de gestão de conhecimento pessoal (PKM) com IA local. Você
 | Letra | Etapa | O que faz |
 |-------|-------|-----------|
 | **I** | Index | Extração e indexação de YouTube, PDFs, DOCX, Markdown, texto livre |
-| **A** | Augment | RAG com BM25 + FTS5 + CrossEncoder entrega os trechos mais relevantes ao modelo |
+| **A** | Augment | RAG com BM25 + FTS5 entrega os trechos mais relevantes ao modelo |
 | **C** | Converse | Chat com streaming, citação de fonte verificável e histórico de conversa |
 
 ---
@@ -38,13 +38,12 @@ Tusab é um sistema de gestão de conhecimento pessoal (PKM) com IA local. Você
 - Colar texto diretamente pela interface
 
 ### Chat e RAG
-- **BM25 + FTS5 + CrossEncoder** — três camadas de recuperação: BM25 para relevância, SQLite FTS5 para matches exatos, CrossEncoder (ms-marco-MiniLM-L-6-v2) para reranqueamento semântico
-- **Busca Restrita** (rápida, ~1 ms) e **Busca Ampla** (semântica com CrossEncoder, ~250 ms)
+- **BM25 + FTS5** — duas camadas de recuperação: BM25 para relevância, SQLite FTS5 para garantir matches exatos (nomes próprios, siglas, termos técnicos)
+- **Busca Restrita** (rápida, ~1 ms) e **Busca Ampla** (recuperação expandida com mais candidatos)
 - **Classificador de intenção** — distingue BUSCA / CONTEXTO / CONVERSA; follow-ups como "traduza isso" operam sobre a resposta anterior sem re-buscar
 - **`@arquivo` no chat** — digitar `@` abre dropdown com todos os arquivos do projeto; selecionar fixa o arquivo como filtro BM25
 - **`@@busca` no chat** — digitar `@@termo` executa busca BM25 real na base e retorna trechos com destaque; o trecho selecionado é injetado diretamente no contexto do LLM
 - **Chips de contexto** — arquivos e trechos fixados via `@`/`@@` aparecem como chips visuais na bolha da mensagem, tornando o contexto referenciado visível
-- Enriquecimento silencioso do corpus BM25 com palavras-chave via KeyBERT
 - Sumarização LLM por vídeo ("Aprofundar base") — resumo estruturado injetado antes dos chunks
 - Multi-base: consulta simultânea em múltiplas bases de conhecimento
 - Histórico de conversa persistente com retomada de sessões anteriores
@@ -84,7 +83,7 @@ Tusab é um sistema de gestão de conhecimento pessoal (PKM) com IA local. Você
 ## Stack
 
 **Backend:** Python 3.12 + FastAPI — API REST local em `localhost:8001`  
-**Agente RAG:** BM25Okapi + SQLite FTS5 + CrossEncoder (sentence-transformers) + KeyBERT  
+**Agente RAG:** BM25Okapi + SQLite FTS5  
 **Frontend:** React 19 + Vite + Tailwind CSS  
 **Desktop:** Electron 34 + instalador NSIS  
 **Extração:** yt-dlp + pdfplumber + python-docx
@@ -114,8 +113,7 @@ YouTube / PDF / DOCX / TXT / WhatsApp / Reunião
    Extração local
    (yt-dlp, pdfplumber, parser especial)
         ↓
-   Chunking + Enriquecimento KeyBERT
-   + Sumarização LLM (opcional)
+   Chunking + Sumarização LLM (opcional)
         ↓
    Indexação BM25 + FTS5 SQLite
         ↓
@@ -125,7 +123,6 @@ YouTube / PDF / DOCX / TXT / WhatsApp / Reunião
    Classificador de intenção (BUSCA / CONTEXTO / CONVERSA)
         ↓
    Recuperação BM25 + FTS5 exact-match
-   + CrossEncoder reranking (Busca Ampla)
         ↓
    LLM local (Ollama) ou externo
         ↓
