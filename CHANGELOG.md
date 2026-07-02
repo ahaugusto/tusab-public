@@ -3,6 +3,14 @@
 
 ---
 
+## [1.0.33] — 2026-07-02
+### Corrigido
+- **Aba Monitor zerada no app instalado** — métricas de RAM/CPU nunca funcionaram no instalador por dependência ausente do pacote. Agora mostram valores reais; indisponibilidade genuína (políticas corporativas) exibe aviso claro em vez de zeros.
+- **Export XLSX** — falhava no app instalado pelo mesmo motivo; corrigido.
+- **Tags compostas dos vídeos ignoradas na busca** — palavras-chave como "renda fixa" atribuídas pelos canais agora contribuem integralmente para o ranqueamento BM25.
+
+---
+
 ## [1.0.32] — 2026-07-02
 ### Corrigido
 - **Toggle do Drive mudo quando sincronização indisponível** — se o arquivo de credenciais estiver ausente da instalação, o app mostra "Sincronização indisponível" com instrução de reinstalar, em vez de um botão que ignora o clique sem explicação.

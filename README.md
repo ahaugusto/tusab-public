@@ -10,7 +10,7 @@ Desenvolvido por **Augusto Brasil** · [CriAugu](https://linkedin.com/in/augusto
 
 ## Download
 
-**[⬇ Tusab Setup 1.0.32.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.32/Tusab.Setup.1.0.32.exe)** — Windows 10/11 x64 · ~223 MB · inclui Python e yt-dlp embutidos
+**[⬇ Tusab Setup 1.0.33.exe](https://github.com/ahaugusto/tusab-public/releases/download/v1.0.33/Tusab.Setup.1.0.33.exe)** — Windows 10/11 x64 · ~223 MB · inclui Python e yt-dlp embutidos
 
 > Não requer instalação de Python, Ollama ou qualquer dependência adicional. O instalador cuida de tudo.
 
@@ -153,6 +153,11 @@ Não. O Tusab só usa o conteúdo que você indexou. Se não encontrar nada rele
 ## Changelog
 
 Histórico completo em [CHANGELOG.md](CHANGELOG.md).
+
+### v1.0.33 — 2026-07-02
+- Aba Monitor corrigida no app instalado (métricas de RAM/CPU voltaram a funcionar)
+- Export XLSX corrigido
+- Busca melhorada: palavras-chave dos vídeos do YouTube agora contribuem integralmente para o ranqueamento
 
 ### v1.0.32 — 2026-07-02
 - Toggle do Drive avisa claramente quando a sincronização está indisponível (antes: botão mudo)
