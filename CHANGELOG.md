@@ -3,6 +3,12 @@
 
 ---
 
+## [1.0.31] — 2026-07-01
+### Corrigido
+- **[CRÍTICO] App inoperante em máquinas de usuários** — o script de preload do Electron falhava ao carregar no app instalado, fazendo `window.tusab` ficar indefinido e todas as requisições ao backend serem bloqueadas por CORS. Indexação, chat e todas as features não funcionavam na v1.0.30 instalada. Se você instalou a v1.0.30, atualize.
+
+---
+
 ## [1.0.30] — 2026-07-01
 ### Adicionado
 - **`@@trecho` injeta contexto diretamente no LLM** — trechos selecionados via `@@busca` no chat são enviados como contexto fixo, sem re-processar pelo BM25. O LLM vê exatamente o trecho que você selecionou.
