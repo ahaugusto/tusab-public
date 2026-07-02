@@ -3,6 +3,16 @@
 
 ---
 
+## [1.0.32] — 2026-07-02
+### Corrigido
+- **Toggle do Drive mudo quando sincronização indisponível** — se o arquivo de credenciais estiver ausente da instalação, o app mostra "Sincronização indisponível" com instrução de reinstalar, em vez de um botão que ignora o clique sem explicação.
+
+### Adicionado
+- **Lista de modelos Ollama ampliada de 8 para 12** — Gemma 3 1B (ultra leve), Mistral Nemo 12B (128k de contexto), Qwen 2.5 14B e Phi-4 14B.
+- Telemetria opt-in: eventos de uso da sincronização com Drive (nenhum conteúdo é coletado).
+
+---
+
 ## [1.0.31] — 2026-07-01
 ### Corrigido
 - **[CRÍTICO] App inoperante em máquinas de usuários** — o script de preload do Electron falhava ao carregar no app instalado, fazendo `window.tusab` ficar indefinido e todas as requisições ao backend serem bloqueadas por CORS. Indexação, chat e todas as features não funcionavam na v1.0.30 instalada. Se você instalou a v1.0.30, atualize.
