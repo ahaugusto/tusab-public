@@ -220,19 +220,63 @@ Para usuários com Ollama:
     a maioria dos casos de uso com vocabulário consistente
 
 ─────────────────────────────────────────
-PRÓXIMO PASSO NATURAL: RERANKING
+RERANKING — JÁ IMPLEMENTADO (CrossEncoder)
 ─────────────────────────────────────────
 
 A query expansion resolve sinônimos na entrada da busca.
-O reranking resolveria o problema na saída:
+O reranking resolve o problema na saída — e já está implementado
+desde v1.0.8, ativado na Busca Ampla:
 
-  BM25 retorna top 10 chunks
-  → LLM lê cada um e decide: "isso realmente responde a pergunta?"
-  → Reordena ou descarta com base em compreensão semântica
+  BM25 retorna os top 12 candidatos
+  → CrossEncoder (ms-marco-MiniLM-L-6-v2, ~80MB, CPU) reordena
+    por relevância semântica real, não só sobreposição de tokens
+  → Top 6 chunks vão ao prompt
 
-Isso é mais poderoso que a query expansion porque o modelo lê
-o conteúdo, não apenas compara tokens. A limitação é latência
-adicional (~2–5s para avaliar 10 chunks) e custo de tokens.
+Custo medido: +236ms sobre a Busca Restrita. Ativado só quando o
+usuário liga a Busca Ampla — a Busca Restrita continua BM25 puro
+(~1ms) para quem prioriza velocidade.
 
-Status: não implementado. Candidato para P3 após validação
-de mercado com a query expansion ativa.
+Desde v1.0.26, SQLite FTS5 roda em paralelo ao BM25 como rede de
+segurança de exact-match — cobre termos frequentes que o BM25
+(por IDF baixo) ou o enriquecimento KeyBERT podem diluir.
+
+─────────────────────────────────────────
+VALIDAÇÃO EXTERNA (jul/2026)
+─────────────────────────────────────────
+
+Dois artigos técnicos avaliados em jul/2026 (ver agents/_historia.md,
+seção "Benchmark") confirmam, de fora, decisões que o Tusab já tinha
+tomado por razões próprias — nenhum exigiu mudança de arquitetura:
+
+1. "Vectorless RAG: building retrieval systems without embeddings or
+   vector databases" (medium.com/codetodeploy) — argumenta que em
+   sistemas empresariais reais, correspondência exata por palavra-chave
+   importa mais que similaridade semântica, e infraestrutura vetorial
+   fica cara em escala. Isso VALIDA a decisão de BM25+FTS5 como
+   fundação e embeddings/CrossEncoder como upgrade opcional, nunca
+   substituição obrigatória — não a contradiz.
+
+2. "Building a RAG pipeline for 10M documents with near-zero
+   hallucination" (levelup.gitconnected.com) — descreve um pipeline
+   em 4 estágios: retrieve → constrain → verify → abstain. Mapeamento
+   direto contra tusab_engine/agent/chat.py:
+     retrieve  = _recuperar_contexto() (BM25 + FTS5 + CrossEncoder)
+     constrain = chunks recuperados como única fonte no prompt
+     verify    = _verificar_alucinacao() (já existe)
+     abstain   = sem_contexto: True (já existe, mas hoje é BINÁRIO —
+                 tem contexto ou não tem; o artigo propõe abstenção
+                 GRADUADA por nível de confiança, que o Tusab ainda
+                 não tem — única lacuna real identificada, registrada
+                 como nota de baixa prioridade, não ação imediata)
+
+O artigo também menciona Reciprocal Rank Fusion para combinar
+ranking denso+esparso — mais formal que a fusão atual do Tusab
+(união BM25+FTS5 com score simbólico 0.1 para resultados exclusivos
+do FTS5, v1.0.26). E cita LanceDB para vetores em disco — já no
+roadmap do Tusab como Sprint 5/P5, substituindo rank_bm25+pkl.
+
+Conclusão: a arquitetura atual (BM25 como fundação, CrossEncoder como
+upgrade, FTS5 como rede de segurança) está alinhada com o que artigos
+técnicos independentes descrevem como boa prática de RAG em produção
+para 2026 — não é uma escolha ingênua por trás da curva, é a mesma
+direção que a indústria está convergindo, com nomes diferentes.

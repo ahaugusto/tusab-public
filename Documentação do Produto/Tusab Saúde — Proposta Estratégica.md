@@ -141,4 +141,31 @@
 
 ---
 
+## Próximos passos técnicos — fontes de dados científicos especializados (jul/2026)
+
+> Avaliação registrada em `agents/_historia.md` (seção "Benchmark — ferramentas open-source avaliadas") ao analisar o projeto [OpenScience](https://github.com/synthetic-sciences/openscience). Documentado aqui como direção de produto, não como trabalho em andamento.
+
+Ao avaliar o OpenScience (workbench de agente de pesquisa científica) como possível inspiração para o Tusab, ficou claro que existem duas categorias de fonte de dados bem diferentes:
+
+1. **Literatura científica geral** (arXiv, PubMed/PMC abstracts, Semantic Scholar, OpenAlex) — texto corrido, cabe no pipeline BM25 atual sem refactor grande. Isso serve o perfil **Pesquisador do B2C** de forma genérica (qualquer área) e está sendo implementado como feature própria (ver CHANGELOG).
+
+2. **Dados clínicos/biomédicos estruturados** (ClinicalTrials.gov, ChEMBL, PubChem, PDB, Ensembl) — não são texto, são registros estruturados (fases de ensaio clínico, moléculas, estruturas de proteína, dados genômicos). Esses **não cabem no perfil Pesquisador genérico do B2C** — servem um usuário muito mais específico (pesquisa clínica/farmacêutica), que é exatamente o público deste documento (Tusab Saúde).
+
+### O que cada fonte agregaria ao Tusab Saúde
+
+| Fonte | O que é | Persona que se beneficia | Complexidade técnica |
+|---|---|---|---|
+| **ClinicalTrials.gov** | Registro público de ensaios clínicos (NIH/NLM) — fase, critérios de inclusão/exclusão, status de recrutamento, resultados | Médico pesquisador, gestor de educação continuada que acompanha ensaios relevantes à especialidade do hospital | API REST v2 JSON, sem autenticação — mas dado é estruturado, não texto corrido; exige schema próprio de indexação, não reaproveita chunking BM25 direto |
+| **ChEMBL / PubChem** | Dados de compostos químicos/farmacológicos (atividade biológica, interações) | Farmacêutico hospitalar, pesquisa de posologia/interação medicamentosa | Dados moleculares — não é RAG sobre texto; exigiria camada de interpretação de domínio nova |
+| **PDB** | Estruturas de proteínas (arquivos `.pdb`/`.cif`) | Pesquisa biomédica avançada (fora do escopo de "consultar protocolo na beira do leito") | Fora do escopo de texto/RAG — visualização 3D, não indexação textual |
+| **Ensembl** | Dados genômicos | Pesquisa genética/genômica — nicho ainda mais estreito | Mesma observação — dado não-textual, subsistema à parte |
+
+### Recomendação
+
+Nenhuma dessas fontes deve ser construída agora. Elas são candidatas de **v2/v3 do Tusab Saúde** (a tabela de fases já existente neste documento coloca "integração com sistema de credenciamento" e "prontuário eletrônico" em v2/v3 — essas fontes seguem a mesma lógica de maturidade). ClinicalTrials.gov é a mais próxima de viabilidade técnica (API simples, sem custo), mas ainda exige um pipeline de indexação **diferente** do texto-em-chunks atual — não é uma "fonte a mais" no sentido em que YouTube/PDF são hoje.
+
+**Gatilho de execução:** o mesmo já estabelecido para todo o Tusab Enterprise — primeiro lead concreto do segmento saúde/farma + validação de que o gestor de educação continuada ou o médico pesquisador realmente têm esse job (acompanhar ensaios clínicos, consultar interação medicamentosa) como prioridade, não suposição.
+
+---
+
 *Entrada recomendada: 2027, após consolidação em educação.*

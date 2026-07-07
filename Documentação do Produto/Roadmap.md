@@ -283,6 +283,28 @@ def sm2(facilidade, intervalo, qualidade):  # qualidade: 0-5
 
 ---
 
+### P0-f — Modo Estudo: promover a aba de primeiro nível do perfil Estudante (decisão registrada, não implementada)
+
+**Contexto (jul/2026):** hoje o Modo Estudo vive como sub-aba `funcionalidades` dentro de "Agente" — oculta da navegação desde o hotfix v1.0.24 (timeout de 300s), disponível a qualquer perfil que tenha a aba `agente` (todos os 4). Augusto observou que isso "pode crescer absurdamente" dentro de uma sub-aba genérica — flashcards, resumo estruturado, quiz SM-2 (P0-d), mapa de conceitos (P0-e), e agora TTS (ver seção Beta abaixo) formam uma feature grande o suficiente para merecer aba própria.
+
+**Decisão:** promover Modo Estudo a aba de primeiro nível, exclusiva do perfil **Estudante** (`PERFIS_CONFIG.estudante.abas`) — reflete o JTBD real ("aprender com vídeos sem rever tudo") em vez de ficar diluído dentro de "Agente", que hoje é majoritariamente configuração técnica (provider, API key, persona).
+
+**Não implementado ainda** — mudança de arquitetura de navegação (`usePerfil.js`, `App.jsx`, `AgentTab.jsx`), deliberadamente adiada para não misturar com a entrega do TTS (P0-g). Fazer quando o Modo Estudo for reativado (sair do estado "oculto por hotfix").
+
+---
+
+### P0-g — TTS local no Modo Estudo (Pocket TTS, build Beta/Enterprise)
+
+**O que é:** botão "🔊 Ouvir resumo" no Modo Estudo, usando [Pocket TTS](https://github.com/kyutai-labs/pocket-tts) (Kyutai Labs) — modelo de síntese de voz 100M parâmetros, CPU-only, streaming, multi-idioma incluindo PT. Fecha o gap "Audio Overviews" listado como desvantagem vs. NotebookLM, com vantagem de posicionamento que o concorrente cloud não tem: 100% local, sem custo de API.
+
+**Decisão de arquitetura (medida, não estimada, jul/2026):** `torch` + `pocket-tts` **nunca entram no instalador B2C**. Medição real: torch ocupa ~530MB em disco (não os ~200MB estimados inicialmente a partir do tamanho do wheel comprimido) — maior que a stack semântica inteira (CrossEncoder+KeyBERT, ~2,5GB) já vetada do B2C pelo mesmo motivo. Instalador B2C atual: 213,7MB (v1.0.35).
+
+**Reserva de escopo:** `pocket-tts` adicionado a `requirements-enterprise.txt` (já hospeda `torch` para CrossEncoder/KeyBERT — mesmo arquivo, sem duplicar decisão). Código roda hoje em dev/`.venv`; feature completa (backend + botão no frontend) só aparece na futura **build Beta/Enterprise**, junto com Busca Ampla (CrossEncoder) e enriquecimento KeyBERT — as três seguem o mesmo gatilho de ativação (primeiro lead concreto ou lançamento formal de uma edição Beta).
+
+**Custo estimado:** endpoint + integração frontend, ~1 dia (código já escrito). Bloqueado por decisão de produto: quando lançar a build Beta, não pela implementação em si.
+
+---
+
 ### P1 — RAG: embedding local opcional (quando Ollama disponível)
 
 **O que é:** quando o usuário tem Ollama configurado e `nomic-embed-text` instalado, usar busca vetorial como complemento ao BM25 (RAG híbrido). Quando não disponível, BM25 puro — degradação graciosa.
