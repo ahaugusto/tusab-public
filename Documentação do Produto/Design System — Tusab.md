@@ -175,6 +175,12 @@ Variante de alerta (update): `bg-warning/5 border-warning/25` (dark) / `bg-amber
 - Status pós-ação: `role="status"`, cor por tom (`secondary` ok / `primary` info / `warning` problema)
 - Snackbar: `fixed bottom-24/6 left-1/2 -translate-x-1/2 rounded-xl shadow-2xl text-xs font-bold` via portal
 
+### ProgressToast (`components/shared/ProgressToast.jsx`)
+4 variantes por `type`: `success` (padrão, `secondary`/emerald), `error` (`danger`/red), `info` (`primary`/violet), `warning` (`warning`/amber — jul/2026, adicionado para falhas não-críticas onde a operação em si não falhou, só a visibilidade dela). Ícone por tipo: `CheckCircle2`/`AlertCircle`/`Info`/`AlertTriangle`. Slot único global (`progressToast` em `App.jsx`) — qualquer chamada nova sobrescreve a anterior; para status que precisa sobreviver a isso, ver "Indicador de Operação em Background" abaixo.
+
+### Indicador de Operação em Background
+Dot `w-1.5 h-1.5 rounded-full bg-{token} animate-pulse` (`aria-hidden="true"`), posicionado `absolute top-1.5 right-2` sobre ícone de navegação/botão quando precisa sinalizar processo em andamento **independente e persistente** ao slot único de toast. Cor por semântica: `bg-warning` (operação ativa, ex.: extração, update disponível, busca externa em background), `bg-primary`/`bg-accent` nos usos já existentes de indicadores de progresso local. **6 usos hoje**: badge de extração/update na navbar (`App.jsx`), indicadores de progresso em `ExtractionTab.jsx` (×2), status do Ollama em `OllamaSetup.jsx`. Padrão nomeado em jul/2026 após o 4º caso de uso (busca arXiv) — sempre reaproveitar esta classe, nunca recriar `className` ad-hoc.
+
 ### Ícones
 `lucide-react`, tamanhos 9–14px acompanhando o texto (10→9-10, xs→12-14). Decorativo = `aria-hidden="true"`; funcional sozinho = `aria-label` no botão.
 

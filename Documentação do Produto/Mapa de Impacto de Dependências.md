@@ -1108,3 +1108,60 @@ SCHEMA_CHUNKS = pa.schema([
 
 **Checklist:**
 - [ ] Adicionar novo campo ao AppState? → Adicionar ao retorno de `GET /agent/status` E ao estado inicial de `useAgentConfig.js`
+
+---
+
+## 15. Contratos adicionados — Busca acadêmica no arXiv (jul/2026)
+
+Feature para o perfil Pesquisador: nova fonte de extração automatizada (busca por tema no arXiv, download de PDF, indexação como documento) — ao lado de YouTube (automatizado) e upload manual (PDF/DOCX/WhatsApp/reuniões). Inspirada no projeto open-source OpenScience (synthetic-sciences), avaliado em `agents/_historia.md` (seção "Benchmark").
+
+### 15.1 Novo módulo `tusab_engine/motor/arxiv.py`
+
+Não reaproveita `motor/extraction.py::tusab_engine()` nem o contrato de `state.stats`/`LogRedirector` do YouTube — são deliberadamente desacoplados (ver 15.2). Reaproveita sim o contrato de documento manual: mesmo cabeçalho `TITULO/FONTE/DATA` e mesmo schema de `_manifest.json` que `router_repositorio.py::cerebro_upload()` já usa (seção 3.2 deste documento).
+
+**Quebra se:**
+- Formato do cabeçalho `.txt` mudar em `cerebro_upload()` sem atualizar `arxiv.py::buscar_arxiv()` (ou vice-versa) — os dois devem permanecer espelhados
+- Schema de `_manifest.json` mudar (novo campo obrigatório, campo renomeado) — `buscar_arxiv()` grava `{id, nome_original, nome_txt, tipo, tamanho, data, chars, fonte_externa}`; falta de `fonte_externa` nos entries antigos é esperado e não deve quebrar leitura
+
+### 15.2 Novos campos no AppState — isolados do contrato YouTube
+
+**Adicionado em:** `tusab_engine/state.py`
+
+| Campo | Tipo | Inicial | Propósito |
+|-------|------|---------|-----------|
+| `state.arxiv_running` | bool | False | indica busca arXiv em andamento |
+| `state.arxiv_cancel` | threading.Event | — | cancelamento cooperativo (equivalente a `evento_cancelar` do YouTube) |
+| `state.arxiv_stats` | dict | `{status, total, processed}` | progresso da busca — **não é um alias de `state.stats`** |
+
+**Decisão deliberada de não reaproveitar `state.stats`:** o schema de `state.stats` (seção 3.3) é um contrato acoplado a conceitos de vídeo (`videos_processed`, `videos_total`) e o `LogRedirector` (seção 3.1) faz parsing de emojis específicos do motor YouTube (`✅`, `📂`, "Sem legenda"). Reaproveitar esse hub para a busca arXiv contaminaria um contrato crítico já frágil. `arxiv_stats` é um dicionário novo, próprio, sem relação com `useStatus.js`/`ExtractionTab`/`StatCard`.
+
+**Quebra se:**
+- `arxiv_stats` for confundido com `state.stats` em qualquer novo código — são namespaces diferentes, não incrementar `state.stats["files_generated"]` a partir de `arxiv.py`
+- Campo renomeado → `GET /arxiv/status` (que faz spread de `state.arxiv_stats`) e o polling em `App.jsx` (`statusArxiv()`) ficam dessincronizados
+
+### 15.3 Novos endpoints — `router_extraction.py`
+
+| Rota | Método | Contrato |
+|------|--------|----------|
+| `/arxiv/search` | POST | `{query: str, max_resultados: int, projeto_nome: str}` → `{ok}` ou `{error, message}`. Roda em `BackgroundTasks`, não bloqueia a resposta. |
+| `/arxiv/cancel` | POST | Seta `state.arxiv_cancel` — mesmo padrão cooperativo do `evento_cancelar` do YouTube |
+| `/arxiv/status` | GET | `{running, status, total, processed}` — polling, consumido por `App.jsx` a cada 2s enquanto `arxivPolling===true` |
+
+**Quebra se:**
+- Shape de `/arxiv/status` mudar → atualizar o polling em `App.jsx` (`handleStartConfirmArxiv`/`useEffect` de `arxivPolling`)
+- `projeto_nome` deixar de exigir projeto pré-existente → quebraria o mesmo invariante de `POST /neural/upload` (projeto deve existir antes; ver seção 3.2 e comentário `[CONTRATO CRÍTICO]` em `cerebro_upload()`)
+
+### 15.4 Novo contrato frontend — `ExtractionModal.jsx`
+
+- Prop nova: `perfil` (recebida de `App.jsx`, já disponível via `usePerfil()`) — controla a visibilidade do toggle YouTube/arXiv (`podeUsarArxiv = perfil === 'pesquisador' && !modoFila`)
+- Prop nova: `onConfirmArxiv` — callback separado de `onConfirm` (fluxo YouTube), evita reaproveitar `handleStartConfirm` que é fortemente acoplado a `setChannel`/`startExtraction`
+- Flag nova em `PERFIS_CONFIG.pesquisador`: `arxiv: true` (`usePerfil.js`) — demais perfis não têm a chave (falsy por ausência, mesmo padrão de outras flags booleanas do arquivo)
+
+**Quebra se:**
+- `stepInicial`/`stepVisualMap`/`temVoltar` forem alterados sem considerar `sourceType==='arxiv'` — esses três pontos foram corrigidos em jul/2026 após QA detectar que o toggle ficava inacessível quando `canalJaConfigurado===true` (ver `agents/_historia.md`)
+- Novo perfil adicionado a `PERFIS_CONFIG` sem decidir explicitamente sobre a flag `arxiv` — ausência da chave é tratada como `false`, mas deveria ser uma decisão consciente, não omissão
+
+**Checklist:**
+- [ ] Adicionar novo campo a `state.arxiv_stats`? → Atualizar `GET /arxiv/status` E o polling em `App.jsx`
+- [ ] Mudar contrato de `_manifest.json` no upload manual? → Espelhar em `arxiv.py::buscar_arxiv()`
+- [ ] Adicionar novo perfil? → Decidir explicitamente o valor de `arxiv` em `PERFIS_CONFIG`

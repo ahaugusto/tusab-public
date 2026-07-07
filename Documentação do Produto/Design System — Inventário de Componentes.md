@@ -95,10 +95,11 @@ Textarea auto-expansível com wrapper de foco; toolbar: toggle Busca Ampla, 🔍
 
 | Componente | Anatomia | Uso |
 |-----------|----------|-----|
-| **ProgressToast** (shared/) | `fixed bottom-24 right-6 z-50 max-w-xs rounded-2xl border p-4 shadow-2xl` + Framer (y+scale); tipos success/error/info (CheckCircle2/AlertCircle/Info); botão opcional "próximo passo" com ArrowRight; auto-close 6s; **desloca-se com o drawer aberto** (`offsetRight`) | Confirmações pós-ação com CTA de próximo passo |
+| **ProgressToast** (shared/) | `fixed bottom-24 right-6 z-50 max-w-xs rounded-2xl border p-4 shadow-2xl` + Framer (y+scale); tipos success/error/info/**warning** (jul/2026 — CheckCircle2/AlertCircle/Info/AlertTriangle); botão opcional "próximo passo" com ArrowRight; auto-close 6s; **desloca-se com o drawer aberto** (`offsetRight`) | Confirmações pós-ação com CTA de próximo passo; `warning` para falhas não-críticas (ex.: polling perdeu conexão mas a operação em si continua) |
 | **Snackbar de indexação** (RepositorioTab) | `fixed bottom-24 left-1/2 -translate-x-1/2 zIndex 99999` pill `rounded-xl shadow-2xl text-xs font-bold pointer-events-none` via portal | Indexação concluída |
 | **Banner de update** (App.jsx) | `fixed bottom-4` card warning com 2 estados (baixando + link manual / pronto + botão instalar); só fora da HomeScreen | electron-updater |
 | **StatusDot** (App.jsx) | dot colorido por estado da extração (running=pulse, paused=warning) | Header |
+| **Indicador de Operação em Background** (padrão, não componente isolado) | Dot `w-1.5 h-1.5 rounded-full bg-{token} animate-pulse` `aria-hidden`, `absolute top-1.5 right-2` sobre ícone/botão. Persiste independente do `ProgressToast` (que é slot único e pode ser sobrescrito por outra ação). Nomeado em jul/2026 após 4 usos reais: badge extração/update (`App.jsx` ×2), progresso em `ExtractionTab.jsx` (×2) | Sinalizar processo assíncrono em andamento (extração, update, busca externa) sem depender do toast |
 | **Notificação nativa** (Electron) | `new Notification` com clique-ação | Extração/chat/update em background |
 
 ## 5. Estados vazios, loading e erro (padrões transversais) 🔜
@@ -141,7 +142,7 @@ Textarea auto-expansível com wrapper de foco; toolbar: toggle Busca Ampla, 🔍
 1. **Chat kit**: bolhas (4 papéis) + chips @/@@ + fonte com ▶ timestamp + input/toolbar — o organismo mais visto do produto
 2. **Modal template**: ModalWrapper como componente com slots (header/body/footer) + variante de confirmação destrutiva
 3. **Shell**: navbar item (com variants de badge) + header (2 estados) 
-4. **Feedback**: ProgressToast (3 tipos) + snackbar + banner de update
+4. **Feedback**: ProgressToast (4 tipos) + snackbar + banner de update + Indicador de Operação em Background
 5. **Formulários**: input wrapper, select, checkbox, sub-tabs
 6. **StatCard + empty state + progress bar**
 
