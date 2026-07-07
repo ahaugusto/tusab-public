@@ -305,6 +305,18 @@ def sm2(facilidade, intervalo, qualidade):  # qualidade: 0-5
 
 ---
 
+### P0-h — Migração Tailwind 3→4 (planejada, não iniciada)
+
+**Contexto (jul/2026):** durante uma rodada de atualização de stacks, `npm outdated` identificou `tailwindcss` 3.4.19→4.3.2 disponível — major bump, propositalmente não aplicado na mesma rodada (ver `agents/_historia.md`, seção "Primeira execução do protocolo de update de stacks").
+
+**Por que não é um update de rotina:** Tailwind v4 muda o modelo de configuração inteiro — de `tailwind.config.js` (JS) para CSS-first (`@theme` dentro do CSS), reescreve o motor de build e pode alterar comportamento de plugins/PostCSS. Risco real: o Design System do Tusab depende extensivamente de classes `dark:` (dark-first, ver `Design System — Tusab.md`) — qualquer regressão silenciosa nessas classes só aparece visualmente, não em teste automatizado.
+
+**Plano:** branch dedicada isolada de qualquer outra feature; seguir o guia oficial de migração do Tailwind; revisão visual manual completa (dark + light, todos os modais, `CircuitBackground`, chat) antes de merge — não é candidato a "só rodar e ver se o build passa", porque o build passar não garante que as cores/estados renderizam certo.
+
+**Prioridade:** P0 por ser dívida técnica que só cresce (quanto mais componentes novos usarem sintaxe v3, maior a superfície de migração depois) — mas não é urgente; não bloqueia nenhuma feature de produto.
+
+---
+
 ### P1 — RAG: embedding local opcional (quando Ollama disponível)
 
 **O que é:** quando o usuário tem Ollama configurado e `nomic-embed-text` instalado, usar busca vetorial como complemento ao BM25 (RAG híbrido). Quando não disponível, BM25 puro — degradação graciosa.
@@ -324,6 +336,24 @@ def sm2(facilidade, intervalo, qualidade):  # qualidade: 0-5
 **Por que é P1:** o NotebookLM faz isso e é o momento de maior confiança no produto. Hoje o Tusab cita mas não permite verificação em dois cliques — gap de UX crítico vs. o principal concorrente.
 
 **Implementação:** `_recuperar_contexto()` já retorna offset de chunk; adicionar `chunk_id` na resposta do chat → frontend abre modal com trecho original ao clicar na citação.
+
+---
+
+### P1-c — Esteira de CI/CD para update de stacks + release automatizado (planejada, não iniciada)
+
+**Contexto (jul/2026):** após a primeira execução manual completa do protocolo de update de stacks (backend Python + frontend npm, testado grupo a grupo — ver `agents/_historia.md`), Augusto levantou a pergunta natural: automatizar isso via CI/CD, incluindo release automatizado do instalador Electron.
+
+**O que resolveria:**
+- Hoje o update de dependências é 100% manual (`pip install -U` + `npm outdated`, um grupo por vez, com teste funcional real entre cada). Funciona, mas não escala e depende de alguém lembrar de rodar.
+- Release do instalador (`Tusab-Setup-X.exe` + `latest.yml`) também é manual — e já causou um bug crítico real (v1.0.28–v1.0.35: nome do asset com ponto em vez de hífen quebrou o auto-update silenciosamente por várias versões, só descoberto por teste direto nas releases).
+
+**Desenho ainda não decidido — pontos a resolver antes de implementar:**
+1. **Gatilho de update de dependências:** cron semanal (ex. GitHub Actions `schedule`) abrindo PR automático (padrão Dependabot/Renovate) vs. manter o ciclo manual acoplado ao ciclo de QA já protocolado. Dependabot/Renovate resolvem o "abrir PR com bump de versão", mas **não** resolvem o teste funcional real (mapear canal do YouTube de verdade, chamar API do Anthropic de verdade) — isso continuaria exigindo um step de CI que rode contra APIs reais ou mocks de contrato.
+2. **Gate de aprovação:** nenhuma stack deve subir para produção sem passar por `pytest tests/` (46 testes) + `smoke_test.py` (16 checks contra backend real) + build do frontend — isso já pode virar um workflow de CI hoje, independente de automatizar o update em si.
+3. **Release automatizado do Electron:** exigiria assinatura de código (hoje o instalador não é assinado — risco de SmartScreen/antivírus falso-positivo, mencionado em `agents/_historia.md`), gerar `latest.yml` corretamente automatizado (para não repetir o bug do nome do asset), e decisão sobre quem/o quê dispara um release (tag manual vs. merge em `main` vs. aprovação humana explícita).
+4. **Escopo solo:** Tusab é mantido por uma pessoa — esteira de CI/CD tem valor real (reduz trabalho manual repetitivo, pega regressão cedo) mas o desenho deve ser proporcional: começar pelo gate de testes em CI (baixo risco, alto valor imediato) antes de automatizar o lançamento de release (alto risco se mal configurado — reprodução do bug do latest.yml em escala automatizada seria pior que o manual).
+
+**Prioridade sugerida:** dividir em duas entregas separadas — (a) CI de testes/build em cada push/PR (baixo risco, deveria vir primeiro) e (b) automação de update de dependências + release (maior escopo, decisão de arquitetura própria, avaliar depois que (a) estiver estável). Não implementar como um projeto único.
 
 ---
 
