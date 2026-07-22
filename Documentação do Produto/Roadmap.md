@@ -357,6 +357,20 @@ def sm2(facilidade, intervalo, qualidade):  # qualidade: 0-5
 
 ---
 
+### P1-d — Geração de documento estruturado com citação por seção (avaliado, não iniciado)
+
+**O que é:** capacidade nova do perfil Especialista — a partir dos documentos de um projeto, gerar um rascunho estruturado por seções (não chat conversacional), com citação obrigatória de fonte específica por seção, não só ao final da resposta como o chat faz hoje. Exemplos de uso: advogado monta petição a partir de contratos/provas de um caso; consultor monta proposta a partir de reuniões e pesquisa; profissional de RH monta parecer a partir de processos indexados.
+
+**Origem:** avaliação detalhada em `agents/_historia.md` (seção "Geração de documento estruturado com citação por seção"), que passou por 4 iterações na mesma conversa — começou como busca de jurisprudência via API pública do CNJ (Datajud), descartada após teste real mostrar timeout de rede e ausência de texto integral de decisões; passou por parser de templates jurídicos e resumo consolidado multi-documento; chegou à formulação final generalizada, não restrita a Direito.
+
+**Por que não é feature de fonte nova (como arXiv/FHIR):** é um modo de **output** inteiramente novo no pipeline — hoje `chat.py` só produz resposta conversacional com fontes citadas ao final. Geração estruturada multi-seção com citação por seção é ordem de grandeza maior em esforço.
+
+**Pré-requisito conceitual já existente:** "projeto" (`data/neural/{projeto}/`) já é a unidade de organização certa — não precisa de estrutura nova para "juntar documentos de um caso", só o modo de geração é que falta.
+
+**Status:** sem lead nem sinal de demanda real (diferente do arXiv, que veio de necessidade observável do perfil Pesquisador já em produção). Não entra no roadmap ativo — registrado para não reavaliar do zero se a ideia voltar.
+
+---
+
 ### P2 — Scheduler de periodicidade (auto-update de canais)
 
 **O que é:** atualização automática de canais configurável pelo usuário. A cada N dias, o Tusab verifica novos vídeos e extrai automaticamente.
