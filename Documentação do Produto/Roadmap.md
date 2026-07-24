@@ -189,46 +189,17 @@ Atualizado: Junho 2026
 
 ---
 
-### P0-c — Calibragem dinâmica de RAG por corpus (Perfil Especialista)
+### P0-c — Calibragem dinâmica de RAG por corpus (Perfil Especialista) — implementado com escopo reduzido (jul/2026)
 
-**O problema:** os parâmetros de RAG são constantes hardcoded (`SCORE_MINIMO`, `CHUNK_SIZE`, `n_docs`, uso de CrossEncoder). O perfil Especialista frequentemente precisa que o usuário ajuste manualmente as configurações dependendo do corpus — base densa de WhatsApp exige limiar menor; corpus técnico pequeno exige limiar maior.
+**Implementado, com uma mudança deliberada em relação ao plano original abaixo:** o desenho inicial incluía `score_minimo` calibrado por corpus — mas isso contradiz um invariante já estabelecido em v1.0.26 (`agents/_historia.md`: "Score mínimo BM25 adaptativo por tamanho de corpus... substituído por `score>0` + FTS5" — qualquer threshold arbitrário, fixo ou adaptativo, já foi tentado e cortava resultados válidos em corpus grande). Esse parâmetro foi **removido do escopo** ao implementar; nunca reintroduzir.
 
-**A proposta:** ao indexar (ou na primeira query de um canal), o backend analisa o corpus e persiste `corpus_profile.json` no diretório do projeto com parâmetros calibrados automaticamente.
+**O que foi implementado:** `tusab_engine/agent/calibration.py` — `_calibrar_corpus()` roda ao final de toda indexação, calcula `n_chunks_total`, `tipo_dominante`, `densidade_media_chars` (informativos) e `n_candidatos_bm25` (único parâmetro efetivamente consumido). Persistido em `data/neural/{prefixo}/management/corpus_profile.json` (escrita atômica). `chat.py::_recuperar_contexto()` lê `n_candidatos_bm25` do perfil ao montar candidatos para o CrossEncoder na Busca Ampla, com fallback para `n*2` (comportamento original) quando o perfil não existe.
 
-```python
-# Exemplo de corpus_profile.json
-{
-  "canal_prefixo": "meu_projeto",
-  "calibrado_em": "2026-06-26T10:00:00",
-  "n_chunks_total": 12400,
-  "tipo_dominante": "texts",       # youtube | documents | texts
-  "densidade_media_tokens": 180,
-  "score_minimo": 0.15,
-  "chunk_size": 1200,
-  "overlap": 250,
-  "usar_crossencoder": true,
-  "n_candidatos_bm25": 15,
-  "n_docs_prompt": 6
-}
-```
+**Diferença deliberada do plano original:** `chunk_size`/`overlap` são calculados só como metadado informativo (exibido no badge da UI) — **não realimentam o chunking real**, que continua com a lógica por tipo de aba já existente e correta em `index.py`. Alimentar de volta criaria um problema de ovo-e-galinha (precisa dos chunks pra calibrar, mas calibra o tamanho do próximo chunk) e duplicaria lógica já correta. `usar_crossencoder` também não foi incluído — a Busca Ampla já é toggle explícito do usuário; auto-decidir isso brigaria com o controle que ele já tem.
 
-**Lógica de calibragem (`_calibrar_corpus(prefixo)` em `index.py`):**
+**UX:** badge "Perfil do corpus" no `BasePainel.jsx` (tipo dominante + n_candidatos_bm25). Sem botão "Recalibrar" dedicado — a calibragem já roda automaticamente a cada indexação, então o botão "Atualizar índice"/"Indexar agora" já existente cumpre esse papel.
 
-| Sinal do corpus | Ação |
-|---|---|
-| `n_chunks > 5000` | `score_minimo = 0.15`; `usar_crossencoder = True` |
-| `tipo_dominante == 'texts'` | `chunk_size = 1200`, `overlap = 250` (conversacional) |
-| `tipo_dominante == 'documents'` | `chunk_size = 1500`, `overlap = 300` (técnico) |
-| `tipo_dominante == 'youtube'` | chunk natural por vídeo — sem chunking extra |
-| `densidade_media_tokens < 50` | corpus de mensagens curtas → `n_candidatos_bm25 = 20` |
-
-**Integração com `_recuperar_contexto()` em `chat.py`:** lê `corpus_profile.json` do projeto ativo antes de aplicar os parâmetros de busca. Fallback para constantes hardcoded se o arquivo não existir (backward-compatible).
-
-**UX:** no Repositório, card "Perfil do corpus" mostra os parâmetros calibrados automaticamente. Botão "Recalibrar" força nova análise após adicionar muitos documentos.
-
-**Quem se beneficia:** Especialista (qualquer corpus), Pesquisador (bases acadêmicas heterogêneas).
-
-**Custo estimado:** 2 dias. Sem nova dependência.
+**Testes:** 8 novos (`tests/test_calibration.py`), incluindo verificação explícita de que `score_minimo` nunca aparece no perfil, e um teste de integração real chamando `indexar()` completo (não mockado).
 
 ---
 
