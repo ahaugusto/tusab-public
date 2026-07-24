@@ -339,21 +339,23 @@ def sm2(facilidade, intervalo, qualidade):  # qualidade: 0-5
 
 ---
 
-### P1-c — Esteira de CI/CD para update de stacks + release automatizado (planejada, não iniciada)
+### P1-c — Esteira de CI/CD para update de stacks + release automatizado (parcialmente implementada — descoberta em jul/2026)
 
-**Contexto (jul/2026):** após a primeira execução manual completa do protocolo de update de stacks (backend Python + frontend npm, testado grupo a grupo — ver `agents/_historia.md`), Augusto levantou a pergunta natural: automatizar isso via CI/CD, incluindo release automatizado do instalador Electron.
+**Correção de registro:** esta entrada foi escrita originalmente como "planejada, não iniciada" sem verificar o estado real do repositório — erro de processo, não de fato. `ci.yml` e `release.yml` já existiam desde **jun/2026** (16/jun e 23/jun respectivamente), muito antes desta entrada ter sido escrita. Investigado e corrigido na mesma sessão em que o erro foi cometido.
 
-**O que resolveria:**
-- Hoje o update de dependências é 100% manual (`pip install -U` + `npm outdated`, um grupo por vez, com teste funcional real entre cada). Funciona, mas não escala e depende de alguém lembrar de rodar.
-- Release do instalador (`Tusab-Setup-X.exe` + `latest.yml`) também é manual — e já causou um bug crítico real (v1.0.28–v1.0.35: nome do asset com ponto em vez de hífen quebrou o auto-update silenciosamente por várias versões, só descoberto por teste direto nas releases).
+**Estado real, confirmado via `gh run list`:**
+- **`ci.yml`** — ativo e funcionando perfeitamente, roda em todo push/PR desde jun/2026 (testes + build do frontend). Nada a fazer aqui — já é exatamente o item (a) que a versão anterior desta entrada propunha como "fazer primeiro".
+- **`release.yml`** — existe desde 23/jun/2026, mas **falhava silenciosamente desde a v1.0.22** (29/jun/2026) e nunca foi usado depois disso — todas as releases v1.0.23 a v1.0.37 foram feitas manualmente (bump, build local, `gh release create`) sem que ninguém percebesse que o pipeline automático existia e estava quebrado.
 
-**Desenho ainda não decidido — pontos a resolver antes de implementar:**
-1. **Gatilho de update de dependências:** cron semanal (ex. GitHub Actions `schedule`) abrindo PR automático (padrão Dependabot/Renovate) vs. manter o ciclo manual acoplado ao ciclo de QA já protocolado. Dependabot/Renovate resolvem o "abrir PR com bump de versão", mas **não** resolvem o teste funcional real (mapear canal do YouTube de verdade, chamar API do Anthropic de verdade) — isso continuaria exigindo um step de CI que rode contra APIs reais ou mocks de contrato.
-2. **Gate de aprovação:** nenhuma stack deve subir para produção sem passar por `pytest tests/` (46 testes) + `smoke_test.py` (16 checks contra backend real) + build do frontend — isso já pode virar um workflow de CI hoje, independente de automatizar o update em si.
-3. **Release automatizado do Electron:** exigiria assinatura de código (hoje o instalador não é assinado — risco de SmartScreen/antivírus falso-positivo, mencionado em `agents/_historia.md`), gerar `latest.yml` corretamente automatizado (para não repetir o bug do nome do asset), e decisão sobre quem/o quê dispara um release (tag manual vs. merge em `main` vs. aprovação humana explícita).
-4. **Escopo solo:** Tusab é mantido por uma pessoa — esteira de CI/CD tem valor real (reduz trabalho manual repetitivo, pega regressão cedo) mas o desenho deve ser proporcional: começar pelo gate de testes em CI (baixo risco, alto valor imediato) antes de automatizar o lançamento de release (alto risco se mal configurado — reprodução do bug do latest.yml em escala automatizada seria pior que o manual).
+**Causa raiz do release.yml quebrado:** `electron/package.json` configura `publish.owner/repo` para `ahaugusto/tusab-public` — repositório **diferente** de onde o workflow roda (`ahaugusto/tusab`). O `GITHUB_TOKEN` automático do GitHub Actions só tem permissão de escrita no repositório local; publicar em outro repositório exige um Personal Access Token explícito. Erro real observado: `403 Forbidden — "Resource not accessible by integration"` (run `28401557076`, v1.0.22).
 
-**Prioridade sugerida:** dividir em duas entregas separadas — (a) CI de testes/build em cada push/PR (baixo risco, deveria vir primeiro) e (b) automação de update de dependências + release (maior escopo, decisão de arquitetura própria, avaliar depois que (a) estiver estável). Não implementar como um projeto único.
+**Corrigido (jul/2026):** `release.yml` trocado de `secrets.GITHUB_TOKEN` para `secrets.RELEASE_PAT` — requer que Augusto gere um PAT com escopo `repo` e salve como secret do repositório `ahaugusto/tusab` (Settings → Secrets and variables → Actions). Depois disso, `git push --tags` volta a publicar releases automaticamente.
+
+**Também adicionado:** `.github/dependabot.yml` — atualização automática de dependências (pip, npm do `web_interface`, npm do `electron`, GitHub Actions), um PR por dependência, testado isoladamente pelo `ci.yml` já existente. Resolve o gatilho de update sem risco de quebra em cascata (lição da rodada manual de jul/2026, onde atualizar um grupo "de baixo risco" quebrou 4 travas transitivas de uma vez — `protobuf`/`typer`/`mpmath`/`setuptools`). Tailwind (major, migração deliberada — P0-h) e Electron (major, exige teste do instalador empacotado) excluídos do automático.
+
+**Ainda não resolvido:** assinatura de código do instalador (SmartScreen/antivírus) — fora de escopo desta correção, seguir tratando como item separado se/quando priorizado.
+
+**Lição de processo:** antes de escrever "não implementado" em qualquer entrada de roadmap, verificar o estado real do repositório (`ls`, `git log`, `gh run list`) — não assumir a partir da conversa ou do que "deveria" existir.
 
 ---
 
