@@ -371,6 +371,22 @@ def sm2(facilidade, intervalo, qualidade):  # qualidade: 0-5
 
 ---
 
+### P1-e — Anti-alucinação graduada (calibração de confiança por afirmação)
+
+**O que é:** hoje `_verificar_alucinacao()` (`tusab_engine/agent/chat.py:774-809`) é binária — mede cobertura de palavras da resposta presentes no corpus (`palavras_resposta`, stopwords removidas) contra um threshold fixo (0.12). Se a cobertura cai abaixo disso, a resposta inteira é substituída por uma mensagem genérica de "não encontrei"; se passa, a resposta vai inteira ao usuário sem nenhum sinal de quão bem fundamentada ela está. Não existe meio-termo: uma resposta 60% fundamentada e 40% especulativa recebe o mesmo tratamento binário que uma alucinação completa.
+
+**Dois problemas distintos, priorizar nesta ordem:**
+1. **Granularidade da checagem** — o método atual valida vocabulário (a palavra aparece no corpus?), não a afirmação em si. Um LLM pode combinar termos corretos do corpus numa frase que não é sustentada pelas fontes e ainda passar no filtro. Checagem por afirmação/sentença exigiria uma segunda passada (LLM ou heurística mais sofisticada) — maior custo, mas mais próxima do que "anti-alucinação" promete de fato.
+2. **Abstenção graduada** — em vez de binário (mostra tudo / esconde tudo), sinalizar ao usuário o nível de confiança por trecho da resposta (ex: destacar visualmente afirmações com baixa cobertura, sem suprimir a resposta inteira). Já identificado como a única lacuna real ao comparar a arquitetura do Tusab com o pipeline `retrieve → constrain → verify → abstain` de um artigo de RAG avaliado externamente (`agents/_historia.md`, seção "Artigos de arquitetura RAG avaliados") — o Tusab já implementa as três primeiras etapas bem, mas `abstain` é binário, não calibrado por confiança.
+
+**Por que isso é diferente de mexer no pipeline de recuperação:** BM25 + FTS5 + CrossEncoder + deduplicação semântica (a parte de *encontrar* o contexto certo) já é uma composição sólida, sem gap estrutural óbvio. O ganho de confiança maior está na camada de *verificação pós-geração*, não na busca.
+
+**Esforço:** menor que P1-d (geração estruturada) — é evolução de uma função já existente (`_verificar_alucinacao`), não um modo de output novo. Viável em escopo pequeno: começar pela granularidade (item 1) já traz ganho de precisão sem exigir UI nova; abstenção graduada (item 2) exige mudança de contrato da resposta do chat (`sem_contexto` hoje é booleano) e trabalho de frontend correspondente.
+
+**Status:** identificado por leitura direta do código (não benchmark), jul/2026. Sem lead nem validação de usuário real — mas diferente de P1-d, não depende de nenhuma decisão de escopo/perfil, é melhoria pura de qualidade da resposta já entregue hoje a todos os perfis.
+
+---
+
 ### P2 — Scheduler de periodicidade (auto-update de canais)
 
 **O que é:** atualização automática de canais configurável pelo usuário. A cada N dias, o Tusab verifica novos vídeos e extrai automaticamente.
